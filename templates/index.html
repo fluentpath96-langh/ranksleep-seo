@@ -4,103 +4,321 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RankSleep SEO - We Optimize. You Rest. (1-Click Autonomous SEO Agent)</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    :root {
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    body {
+      font-family: var(--font-sans);
+      background-color: #080706;
+      color: #f5f5f4;
+      background-image: 
+        radial-gradient(ellipse 90% 55% at 50% -20%, rgba(217, 119, 6, 0.20), transparent 75%),
+        radial-gradient(circle at 15% 35%, rgba(180, 83, 9, 0.10), transparent 45%),
+        radial-gradient(circle at 85% 65%, rgba(245, 158, 11, 0.08), transparent 40%),
+        radial-gradient(circle at 50% 90%, rgba(146, 64, 14, 0.08), transparent 50%);
+      background-attachment: fixed;
+    }
+
+    /* ── ThreeUI / Liquid Glass Panels ────────────────────────── */
+    .crystal-panel {
+      position: relative;
+      background: linear-gradient(165deg, rgba(28, 25, 23, 0.70) 0%, rgba(18, 16, 15, 0.85) 100%);
+      backdrop-filter: blur(28px) saturate(190%);
+      -webkit-backdrop-filter: blur(28px) saturate(190%);
+      border: 1px solid rgba(245, 158, 11, 0.22);
+      box-shadow: 
+        0 30px 60px -15px rgba(0, 0, 0, 0.85),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.35);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .crystal-panel:hover {
+      border-color: rgba(245, 158, 11, 0.40);
+      box-shadow: 
+        0 35px 70px -15px rgba(0, 0, 0, 0.90),
+        0 0 30px -8px rgba(245, 158, 11, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.28);
+    }
+    .crystal-panel-highlight {
+      position: relative;
+      background: linear-gradient(170deg, rgba(41, 37, 36, 0.88) 0%, rgba(24, 21, 19, 0.96) 100%);
+      backdrop-filter: blur(32px) saturate(200%);
+      -webkit-backdrop-filter: blur(32px) saturate(200%);
+      border: 1.5px solid rgba(245, 158, 11, 0.50);
+      box-shadow: 
+        0 35px 70px -10px rgba(0, 0, 0, 0.85),
+        0 0 50px -10px rgba(245, 158, 11, 0.35),
+        inset 0 1.5px 0 rgba(254, 240, 138, 0.40),
+        inset 0 -1.5px 0 rgba(0, 0, 0, 0.40);
+    }
+
+    /* ── ThreeUI Liquid Glass Buttons (Specular Rim & Dispersion) ─ */
+    .apple-crystal-btn {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      background: 
+        radial-gradient(140px circle at var(--pointer-x, 50%) var(--pointer-y, 50%), rgba(255, 255, 255, 0.40) 0%, rgba(254, 240, 138, 0.15) 45%, transparent 70%),
+        linear-gradient(135deg, #f59e0b 0%, #d97706 48%, #92400e 100%);
+      border: 1px solid rgba(254, 240, 138, 0.55);
+      border-radius: 14px;
+      color: #ffffff;
+      font-weight: 700;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+      box-shadow: 
+        0 14px 34px -8px rgba(217, 119, 6, 0.55),
+        0 4px 12px rgba(0, 0, 0, 0.5),
+        inset 0 1.5px 0.5px rgba(255, 255, 255, 0.90),
+        inset 0 -1.5px 1px rgba(0, 0, 0, 0.30),
+        inset 1px 0 0.5px rgba(254, 240, 138, 0.40),
+        inset -1px 0 0.5px rgba(217, 119, 6, 0.40);
+      transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.24s ease;
+    }
+    /* Upper curved optical lens sheen */
+    .apple-crystal-btn::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 52% 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.40) 0%, rgba(255, 255, 255, 0) 100%);
+      border-radius: inherit;
+      pointer-events: none;
+      z-index: 1;
+    }
+    /* Prismatic Chromatic Dispersion Edge */
+    .apple-crystal-btn::after {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      background: linear-gradient(115deg, rgba(254, 240, 138, 0.5) 0%, transparent 35%, rgba(56, 189, 248, 0.28) 65%, rgba(245, 158, 11, 0.5) 100%);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      -webkit-mask-composite: xor;
+      padding: 1px;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .apple-crystal-btn:hover {
+      transform: translateY(-2px) scale(1.015);
+      box-shadow: 
+        0 20px 42px -8px rgba(245, 158, 11, 0.75),
+        0 6px 16px rgba(0, 0, 0, 0.6),
+        inset 0 2px 1px rgba(255, 255, 255, 0.98),
+        inset 0 -1.5px 1px rgba(0, 0, 0, 0.25);
+    }
+    .apple-crystal-btn:active {
+      transform: translateY(0.5px) scale(0.98);
+      box-shadow: 
+        0 6px 16px -4px rgba(217, 119, 6, 0.6),
+        inset 0 1px 0.5px rgba(255, 255, 255, 0.6),
+        inset 0 2px 4px rgba(0, 0, 0, 0.35);
+    }
+
+    /* ── Secondary Frosted Glass Buttons ──────────────────────── */
+    .apple-secondary-btn {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      background: 
+        radial-gradient(110px circle at var(--pointer-x, 50%) var(--pointer-y, 50%), rgba(255, 255, 255, 0.16) 0%, transparent 70%),
+        rgba(28, 25, 23, 0.65);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 14px;
+      box-shadow: 
+        0 10px 24px -8px rgba(0, 0, 0, 0.7),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .apple-secondary-btn:hover {
+      background: 
+        radial-gradient(130px circle at var(--pointer-x, 50%) var(--pointer-y, 50%), rgba(254, 240, 138, 0.20) 0%, transparent 70%),
+        rgba(35, 31, 28, 0.85);
+      border-color: rgba(245, 158, 11, 0.45);
+      color: #ffffff;
+      transform: translateY(-1.5px);
+      box-shadow: 
+        0 16px 32px -8px rgba(0, 0, 0, 0.8),
+        0 0 24px -4px rgba(245, 158, 11, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.45);
+    }
+    .apple-secondary-btn:active {
+      transform: translateY(0.5px) scale(0.985);
+    }
+
+    /* ── Floating Liquid Glass Top Dock (ThreeUI Inspired) ────── */
+    .liquid-dock-rail {
+      background: linear-gradient(160deg, rgba(38, 34, 32, 0.78) 0%, rgba(20, 18, 17, 0.90) 100%);
+      backdrop-filter: blur(30px) saturate(190%);
+      -webkit-backdrop-filter: blur(30px) saturate(190%);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      box-shadow:
+        0 24px 60px -15px rgba(0, 0, 0, 0.88),
+        0 0 35px -8px rgba(217, 119, 6, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.38),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .liquid-dock-rail:hover {
+      border-color: rgba(245, 158, 11, 0.40);
+      box-shadow:
+        0 30px 70px -15px rgba(0, 0, 0, 0.92),
+        0 0 45px -8px rgba(217, 119, 6, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.50);
+    }
+    .liquid-dock-item {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.72);
+      text-decoration: none;
+      border: 1px solid transparent;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .liquid-dock-item:hover {
+      color: #ffffff;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.03) 100%);
+      border-color: rgba(255, 255, 255, 0.22);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.42), 0 6px 14px -6px rgba(0, 0, 0, 0.7);
+      transform: translateY(-1.5px) scale(1.05);
+    }
+
+    .crystal-gold-text {
+      background: linear-gradient(135deg, #ffffff 15%, #fef3c7 45%, #f59e0b 80%, #b45309 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .crystal-pill {
+      background: rgba(41, 37, 36, 0.65);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
     .glow-effect {
-      box-shadow: 0 0 50px -10px rgba(59, 130, 246, 0.4);
+      box-shadow: 0 0 50px -10px rgba(245, 158, 11, 0.3);
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen antialiased selection:bg-blue-600 selection:text-white">
+<body class="min-h-screen antialiased selection:bg-amber-600 selection:text-white">
 
-  <!-- Header Navigation -->
-  <nav class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-blue-600 to-cyan-400 flex items-center justify-center font-black text-xl shadow-lg shadow-blue-500/20">
+  <!-- Top Announcement Promo Bar (50% Off Launch) -->
+  <div class="bg-gradient-to-r from-stone-950 via-amber-950/80 to-stone-950 border-b border-amber-500/20 py-2.5 px-4 text-center text-xs text-amber-200/90 flex items-center justify-center gap-2 relative z-50">
+    <span class="inline-block px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-extrabold text-[10px] border border-amber-500/30 uppercase tracking-wider">Early Access</span>
+    <span>First 100 Shopify &amp; WordPress Stores get <strong>50% OFF Lifetime</strong> with code <code class="bg-black/60 text-amber-300 px-2 py-0.5 rounded-md border border-amber-500/30 font-mono font-bold">LAUNCH50</code></span>
+  </div>
+
+  <!-- Floating Liquid Glass Top Dock (ThreeUI Inspired) -->
+  <header class="sticky top-3 z-50 px-4 sm:px-6 flex justify-center">
+    <nav class="liquid-dock-rail max-w-5xl w-full flex items-center justify-between px-4 sm:px-6 py-2.5 rounded-2xl">
+      <!-- Brand Capsule -->
+      <a href="/" class="flex items-center space-x-3 no-underline group">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-600 via-amber-500 to-yellow-300 flex items-center justify-center font-black text-lg shadow-lg shadow-amber-500/25 border border-amber-300/40 group-hover:scale-105 transition transform">
           🌙
         </div>
-        <div>
-          <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">RankSleep SEO</span>
-          <span class="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">Autonomous Agent</span>
+        <div class="flex items-center">
+          <span class="font-extrabold text-base sm:text-lg tracking-tight crystal-gold-text">RankSleep SEO</span>
+          <span class="hidden md:inline-block ml-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 uppercase tracking-wider">AI Agent</span>
         </div>
-      </div>
-      <div class="flex items-center space-x-3">
-        <a href="#how-it-works" class="text-sm text-slate-400 hover:text-white transition">How It Works</a>
-        <a href="#pricing" class="text-sm text-slate-400 hover:text-white transition">Pricing</a>
-        <a href="/api/download-plugin" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-3 py-1.5 rounded-lg border border-slate-700 transition flex items-center gap-1.5">
-          <span>📦</span> WP Plugin
+      </a>
+
+      <!-- Center Dock Links with Proximity Magnification -->
+      <div class="hidden sm:flex items-center space-x-1">
+        <a href="#how-it-works" class="liquid-dock-item">
+          <span>⚙️</span>
+          <span>How It Works</span>
         </a>
-        <button onclick="openContactModal()" class="text-xs bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 font-semibold px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
-          <span>💬</span> Contact Support
+        <a href="#pricing" class="liquid-dock-item">
+          <span>💎</span>
+          <span>Pricing</span>
+          <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 ml-1">50% OFF</span>
+        </a>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center space-x-2.5">
+        <a href="/api/download-plugin" class="text-xs apple-secondary-btn text-stone-200 font-semibold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer">
+          <span>📦</span> <span class="hidden sm:inline">WP</span> Plugin
+        </a>
+        <button onclick="openContactModal()" class="text-xs apple-crystal-btn font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer">
+          <span>💬</span> Contact
         </button>
       </div>
-    </div>
-  </nav>
+    </nav>
+  </header>
 
   <!-- Hero Section -->
   <main class="max-w-5xl mx-auto px-6 pt-16 pb-24">
     <div class="text-center space-y-6">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-950/60 border border-blue-800/50 text-blue-400 text-xs font-semibold">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full crystal-pill text-amber-300 text-xs font-semibold">
+        <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
         <span>1-Time Setup • 100% Daily Autopilot: <strong>We Optimize. You Rest.</strong></span>
       </div>
 
       <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight">
         Fix Your Store's SEO in <br class="hidden sm:block"/>
-        <span class="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">One Single Click.</span>
+        <span class="crystal-gold-text">One Single Click.</span>
       </h1>
 
-      <p class="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
+      <p class="text-base sm:text-lg text-stone-300 max-w-2xl mx-auto leading-relaxed">
         The autonomous SEO employee for Shopify &amp; WordPress. Paste our snippet once — our AI agent continuously monitors, scans, and optimizes your site every 24 hours on full autopilot.
       </p>
 
       <!-- Highlights Badge Bar -->
-      <div class="flex flex-wrap justify-center gap-3 pt-2 text-xs text-slate-300 font-medium">
-        <span class="px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 flex items-center gap-1.5">
+      <div class="flex flex-wrap justify-center gap-3 pt-2 text-xs text-stone-300 font-medium">
+        <span class="px-3.5 py-1.5 rounded-xl crystal-panel flex items-center gap-2">
           <span>⚡</span> One-Time Setup (60 Seconds)
         </span>
-        <span class="px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 flex items-center gap-1.5">
+        <span class="px-3.5 py-1.5 rounded-xl crystal-panel flex items-center gap-2">
           <span>🔄</span> 24/7 Daily Autonomous Optimization
         </span>
-        <span class="px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 flex items-center gap-1.5">
+        <span class="px-3.5 py-1.5 rounded-xl crystal-panel flex items-center gap-2">
           <span>😴</span> Zero Daily Work Required
         </span>
       </div>
 
       <!-- URL Input & Scan Bar -->
       <div class="pt-6 max-w-2xl mx-auto">
-        <div class="p-2 rounded-2xl bg-slate-900 border border-slate-800 focus-within:border-blue-500 transition shadow-2xl glow-effect flex flex-col sm:flex-row gap-2">
+        <div class="p-2.5 rounded-2xl crystal-panel focus-within:border-amber-500/60 transition shadow-2xl flex flex-col sm:flex-row gap-2.5">
           <input 
             id="siteUrl" 
             type="text" 
             placeholder="e.g. https://yourbusiness.com or mystore.myshopify.com" 
-            class="flex-1 bg-transparent px-4 py-3.5 text-sm sm:text-base text-white placeholder-slate-500 focus:outline-none"
-            value="https://example.com"
+            class="flex-1 bg-transparent px-4 py-3 text-sm sm:text-base text-white placeholder-stone-500 focus:outline-none"
+            value="https://vilonix.shop"
           />
           <button 
             id="scanBtn"
             onclick="startAudit()"
-            class="bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-bold px-7 py-3.5 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 text-sm sm:text-base"
+            class="apple-crystal-btn active:scale-95 font-bold px-7 py-3 rounded-xl transition flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer"
           >
             <span>Scan Free</span>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
           </button>
         </div>
-        <p class="text-xs text-slate-500 mt-3">⚡ Scans Technical SEO, Titles, Meta Tags, Image Alt Attributes & Schema in 5 seconds.</p>
+        <p class="text-xs text-stone-400 mt-3 font-medium">⚡ Scans Technical SEO, Titles, Meta Tags, Image Alt Attributes &amp; Schema in 5 seconds.</p>
       </div>
     </div>
 
     <!-- Scan Loading State -->
-    <div id="loadingState" class="hidden mt-12 p-8 rounded-2xl bg-slate-900/80 border border-slate-800 text-center space-y-4 max-w-md mx-auto">
+    <div id="loadingState" class="hidden mt-12 p-8 rounded-3xl crystal-panel text-center space-y-4 max-w-md mx-auto">
       <div class="inline-block animate-spin text-4xl">🌀</div>
       <h3 class="text-lg font-bold text-white">Auditing Website in Real-Time...</h3>
-      <p id="loadingStep" class="text-xs text-blue-400 font-mono">Connecting to server & measuring response time...</p>
-      <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-        <div class="bg-blue-500 h-full w-2/3 animate-pulse"></div>
+      <p id="loadingStep" class="text-xs text-amber-300 font-mono">Connecting to server &amp; measuring response time...</p>
+      <div class="w-full bg-stone-850 h-1.5 rounded-full overflow-hidden bg-stone-800">
+        <div class="bg-gradient-to-r from-amber-500 to-yellow-400 h-full w-2/3 animate-pulse"></div>
       </div>
     </div>
 
@@ -108,22 +326,22 @@
     <div id="resultsCard" class="hidden mt-12 space-y-8">
       
       <!-- Top Overview Banner -->
-      <div class="p-8 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="p-8 rounded-3xl crystal-panel-highlight shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6 border border-amber-500/30">
         <div class="flex items-center gap-6">
           <!-- Circular Score Meter -->
-          <div class="relative w-28 h-28 flex items-center justify-center rounded-2xl bg-slate-950 border border-slate-800 shadow-inner">
+          <div class="relative w-28 h-28 flex items-center justify-center rounded-2xl crystal-panel border border-amber-500/30 shadow-inner">
             <div class="text-center">
-              <span id="scoreNumber" class="text-4xl font-extrabold text-amber-400">60</span>
-              <span class="block text-[10px] font-bold text-slate-500 tracking-wider">/ 100</span>
+              <span id="scoreNumber" class="text-4xl font-extrabold crystal-gold-text">60</span>
+              <span class="block text-[10px] font-bold text-stone-400 tracking-wider">/ 100</span>
             </div>
           </div>
           <div>
             <div class="flex items-center gap-2">
               <span id="targetDomain" class="text-xl font-bold text-white">example.com</span>
-              <span id="cmsBadge" class="text-xs px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-medium">WordPress</span>
+              <span id="cmsBadge" class="text-xs px-3 py-1 rounded-full crystal-pill text-amber-300 font-semibold border border-amber-500/30">WordPress</span>
             </div>
-            <p id="scoreSummary" class="text-sm text-slate-400 mt-1">Found multiple critical issues preventing top Google ranking.</p>
-            <div class="flex items-center gap-4 mt-3 text-xs text-slate-400 font-mono">
+            <p id="scoreSummary" class="text-sm text-stone-300 mt-1">Found critical optimization blockers preventing top Google rank.</p>
+            <div class="flex items-center gap-4 mt-3 text-xs text-stone-400 font-mono">
               <span id="responseTime">⏱️ Load: 0.9s</span>
               <span id="sslStatus">🔒 SSL: Secure</span>
             </div>
@@ -133,7 +351,7 @@
         <div class="w-full md:w-auto">
           <button 
             onclick="openFixModal()"
-            class="w-full md:w-auto bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-extrabold px-8 py-4 rounded-2xl shadow-xl shadow-emerald-500/20 transition transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-3 text-base"
+            class="w-full md:w-auto apple-crystal-btn font-extrabold px-8 py-4 rounded-2xl shadow-xl shadow-amber-500/25 transition active:scale-95 flex items-center justify-center gap-3 text-base cursor-pointer"
           >
             <span>🚀 1-Click Fix All Issues</span>
           </button>
@@ -143,36 +361,36 @@
       <!-- Issues Breakdown Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         
-        <!-- Critical Issues (Red) -->
-        <div class="p-6 rounded-2xl bg-rose-950/20 border border-rose-900/40">
+        <!-- Critical Issues (Red/Rose Glass) -->
+        <div class="p-6 rounded-2xl crystal-panel bg-rose-950/20 border border-rose-500/30">
           <div class="flex items-center gap-2 mb-4">
-            <span class="w-3 h-3 rounded-full bg-rose-500"></span>
-            <h3 class="text-sm font-bold uppercase tracking-wider text-rose-400">Critical Ranking Blockers (<span id="criticalCount">0</span>)</h3>
+            <span class="w-3 h-3 rounded-full bg-rose-500 animate-pulse"></span>
+            <h3 class="text-sm font-bold uppercase tracking-wider text-rose-300">Critical Ranking Blockers (<span id="criticalCount">0</span>)</h3>
           </div>
-          <ul id="criticalList" class="space-y-3 text-sm text-slate-300">
+          <ul id="criticalList" class="space-y-3 text-sm text-stone-200">
             <!-- Dynamic items -->
           </ul>
         </div>
 
-        <!-- Warnings & Opportunities (Amber) -->
-        <div class="p-6 rounded-2xl bg-amber-950/20 border border-amber-900/40">
+        <!-- Warnings & Opportunities (Amber Glass) -->
+        <div class="p-6 rounded-2xl crystal-panel bg-amber-950/20 border border-amber-500/30">
           <div class="flex items-center gap-2 mb-4">
-            <span class="w-3 h-3 rounded-full bg-amber-500"></span>
-            <h3 class="text-sm font-bold uppercase tracking-wider text-amber-400">Warnings & Optimization Needed (<span id="warningCount">0</span>)</h3>
+            <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+            <h3 class="text-sm font-bold uppercase tracking-wider text-amber-300">Warnings &amp; Opportunities (<span id="warningCount">0</span>)</h3>
           </div>
-          <ul id="warningList" class="space-y-3 text-sm text-slate-300">
+          <ul id="warningList" class="space-y-3 text-sm text-stone-200">
             <!-- Dynamic items -->
           </ul>
         </div>
       </div>
 
-      <!-- Passed Checks (Green) -->
-      <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800">
+      <!-- Passed Checks (Emerald/Gold Glass) -->
+      <div class="p-6 rounded-2xl crystal-panel bg-stone-900/60 border border-stone-800">
         <div class="flex items-center gap-2 mb-4">
-          <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
-          <h3 class="text-sm font-bold uppercase tracking-wider text-emerald-400">Passed Health Checks</h3>
+          <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+          <h3 class="text-sm font-bold uppercase tracking-wider text-emerald-300">Passed Health Checks</h3>
         </div>
-        <ul id="passedList" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-400">
+        <ul id="passedList" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-stone-300">
           <!-- Dynamic items -->
         </ul>
       </div>
@@ -180,63 +398,78 @@
     </div>
 
     <!-- Pricing / 1-Click Fix Section -->
-    <div id="pricing" class="mt-24 pt-12 border-t border-slate-800">
+    <div id="pricing" class="mt-28 pt-12 border-t border-amber-500/15">
       <div class="text-center space-y-3 mb-12">
-        <h2 class="text-3xl font-extrabold text-white">Choose Your Autopilot Plan</h2>
-        <p class="text-slate-400 text-sm">Frictionless guest checkout • Agent deploys immediately to your site</p>
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full crystal-pill text-amber-300 text-xs font-semibold">
+          <span>🏷️ Early Access Launch Special</span>
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Choose Your <span class="crystal-gold-text">Autopilot Plan</span></h2>
+        <p class="text-stone-300 text-sm max-w-xl mx-auto">
+          Frictionless guest checkout • Agent deploys immediately • First 100 stores get <strong>50% OFF Lifetime</strong> with code <code class="bg-black/60 text-amber-300 px-2 py-0.5 rounded font-mono font-bold border border-amber-500/30">LAUNCH50</code>
+        </p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
         
-        <!-- Starter Tier ($50/mo) -->
-        <div class="p-8 rounded-3xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition flex flex-col justify-between">
+        <!-- Starter Tier ($50/mo -> $25/mo with LAUNCH50) -->
+        <div class="p-8 rounded-3xl crystal-panel flex flex-col justify-between relative group hover:border-amber-500/40 transition">
           <div class="space-y-4">
-            <span class="text-xs font-bold uppercase tracking-wider text-blue-400">Foundation</span>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Foundation</span>
+              <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30">50% OFF Applied</span>
+            </div>
             <div class="flex items-baseline gap-2">
-              <span class="text-5xl font-extrabold text-white">$50</span>
-              <span class="text-slate-400 text-sm">/ month</span>
+              <span class="text-2xl text-stone-500 line-through font-semibold">$50</span>
+              <span class="text-5xl font-extrabold crystal-gold-text">$25</span>
+              <span class="text-stone-400 text-sm font-medium">/ month</span>
             </div>
             <h3 class="text-xl font-bold text-white">Technical SEO Autopilot</h3>
-            <p class="text-xs text-slate-400">Covers all essential technical foundations so Google bots can crawl without errors.</p>
+            <p class="text-xs text-stone-300">Covers all essential technical foundations so Google bots can crawl without errors.</p>
             
-            <ul class="space-y-2.5 text-xs text-slate-300 pt-4 border-t border-slate-800">
-              <li class="flex items-center gap-2">✅ XML Sitemap & Robots.txt Auto-Generation</li>
-              <li class="flex items-center gap-2">✅ SSL & Mobile Viewport Protection</li>
-              <li class="flex items-center gap-2">✅ Broken Link & 404 Redirection Fixer</li>
-              <li class="flex items-center gap-2">✅ Daily Site Health Monitoring</li>
+            <ul class="space-y-2.5 text-xs text-stone-200 pt-4 border-t border-amber-500/15">
+              <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> XML Sitemap &amp; Robots.txt Auto-Generation</li>
+              <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> SSL &amp; Mobile Viewport Protection</li>
+              <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> Broken Link &amp; 404 Redirection Fixer</li>
+              <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> Daily Site Health Monitoring</li>
             </ul>
           </div>
 
-          <button onclick="selectPlan('starter_50')" class="mt-8 w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3.5 rounded-xl border border-slate-700 transition text-sm">
-            Activate Starter ($50/mo)
+          <button onclick="selectPlan('starter_50')" class="mt-8 w-full apple-secondary-btn hover:border-amber-500/60 text-white font-bold py-3.5 rounded-xl transition text-sm flex items-center justify-center gap-2">
+            <span>Activate Starter ($25/mo)</span>
+            <span class="text-xs text-amber-400 font-mono font-bold">50% OFF</span>
           </button>
         </div>
 
-        <!-- Pro Tier ($180/mo) - Highlighted -->
-        <div class="p-8 rounded-3xl bg-gradient-to-b from-blue-950/60 to-slate-900 border-2 border-blue-500 relative flex flex-col justify-between shadow-2xl glow-effect">
-          <div class="absolute -top-3 right-6 bg-blue-500 text-white font-bold text-[11px] px-3 py-1 rounded-full uppercase tracking-wider">
-            Most Popular
+        <!-- Pro Tier ($180/mo -> $90/mo with LAUNCH50) - Highlighted -->
+        <div class="p-8 rounded-3xl crystal-panel-highlight relative flex flex-col justify-between shadow-2xl glow-effect">
+          <div class="absolute -top-3.5 right-6 bg-gradient-to-r from-amber-500 to-yellow-400 text-stone-950 font-black text-[11px] px-3.5 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-amber-500/30">
+            ★ Most Popular
           </div>
           <div class="space-y-4">
-            <span class="text-xs font-bold uppercase tracking-wider text-blue-300">Complete AI Suite</span>
-            <div class="flex items-baseline gap-2">
-              <span class="text-5xl font-extrabold text-white">$180</span>
-              <span class="text-slate-400 text-sm">/ month</span>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-amber-300">Complete AI Suite</span>
+              <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/25 text-amber-200 border border-amber-400/40">Code LAUNCH50</span>
             </div>
-            <h3 class="text-xl font-bold text-white">AI On-Page & Schema Autopilot</h3>
-            <p class="text-xs text-blue-200/70">Autonomous agent optimizes every page, product, title, alt tag, and schema.</p>
+            <div class="flex items-baseline gap-2">
+              <span class="text-2xl text-stone-500 line-through font-semibold">$180</span>
+              <span class="text-5xl font-extrabold crystal-gold-text">$90</span>
+              <span class="text-stone-400 text-sm font-medium">/ month</span>
+            </div>
+            <h3 class="text-xl font-bold text-white">AI On-Page &amp; Schema Autopilot</h3>
+            <p class="text-xs text-amber-200/80">Autonomous agent optimizes every page, product, title, alt tag, and schema daily.</p>
             
-            <ul class="space-y-2.5 text-xs text-slate-200 pt-4 border-t border-blue-900/50">
-              <li class="flex items-center gap-2">🌟 <strong>All Technical Features included</strong></li>
-              <li class="flex items-center gap-2">🌟 AI Generated High-CTR Meta Titles</li>
-              <li class="flex items-center gap-2">🌟 Conversion Meta Descriptions for all pages</li>
-              <li class="flex items-center gap-2">🌟 100% Image Alt Tags Auto-filled</li>
-              <li class="flex items-center gap-2">🌟 Google Rich Schema JSON-LD (Stars & Reviews)</li>
+            <ul class="space-y-2.5 text-xs text-stone-100 pt-4 border-t border-amber-500/20">
+              <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">★</span> <strong>All Technical Features included</strong></li>
+              <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">★</span> AI Generated High-CTR Meta Titles</li>
+              <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">★</span> Conversion Meta Descriptions for all pages</li>
+              <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">★</span> 100% Image Alt Tags Auto-filled</li>
+              <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">★</span> Google Rich Schema JSON-LD (Stars &amp; Reviews)</li>
             </ul>
           </div>
 
-          <button onclick="selectPlan('pro_180')" class="mt-8 w-full bg-blue-600 hover:bg-blue-500 text-white font-extrabold py-3.5 rounded-xl transition shadow-lg shadow-blue-600/40 text-sm">
-            Deploy Full Autopilot ($180/mo)
+          <button onclick="selectPlan('pro_180')" class="mt-8 w-full apple-crystal-btn font-extrabold py-3.5 rounded-xl transition text-sm flex items-center justify-center gap-2 shadow-xl shadow-amber-600/30">
+            <span>Deploy Full Autopilot ($90/mo)</span>
+            <span class="text-xs text-amber-200 font-mono font-bold">50% OFF</span>
           </button>
         </div>
 
@@ -244,50 +477,50 @@
     </div>
 
     <!-- How It Works Section -->
-    <div id="how-it-works" class="mt-28 pt-16 border-t border-slate-800/80">
+    <div id="how-it-works" class="mt-28 pt-16 border-t border-amber-500/15">
       <div class="text-center space-y-3 mb-16">
-        <span class="text-xs font-bold uppercase tracking-wider text-cyan-400 bg-cyan-950/40 px-3 py-1 rounded-full border border-cyan-800/40">
+        <span class="text-xs font-bold uppercase tracking-wider text-amber-300 crystal-pill px-3.5 py-1 rounded-full">
           The Autopilot Experience
         </span>
         <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
           One-Time Work. Just Paste It, <br class="hidden sm:block"/>
-          <span class="bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">It Runs on Full Autopilot.</span>
+          <span class="crystal-gold-text">It Runs on Full Autopilot.</span>
         </h2>
-        <p class="text-slate-400 text-sm max-w-xl mx-auto">
+        <p class="text-stone-300 text-sm max-w-xl mx-auto">
           You don't need an expensive agency or daily checklists. RankSleep SEO turns weeks of complex manual SEO into 3 effortless steps:
         </p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- Step 1 -->
-        <div class="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 relative hover:border-blue-500/50 transition">
-          <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 font-extrabold flex items-center justify-center mb-4 text-base border border-blue-500/20">
+        <div class="p-7 rounded-3xl crystal-panel relative hover:border-amber-500/50 transition group">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600/20 to-yellow-500/20 text-amber-400 font-black flex items-center justify-center mb-5 text-lg border border-amber-500/30 shadow-inner group-hover:scale-105 transition">
             01
           </div>
           <h3 class="text-lg font-bold text-white mb-2">5-Second Scan</h3>
-          <p class="text-xs text-slate-400 leading-relaxed">
+          <p class="text-xs text-stone-300 leading-relaxed">
             Enter your Shopify or WordPress store URL. Our agent instantly identifies broken tags, missing schemas, and alt attributes.
           </p>
         </div>
 
         <!-- Step 2 -->
-        <div class="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 relative hover:border-emerald-500/50 transition">
-          <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 font-extrabold flex items-center justify-center mb-4 text-base border border-emerald-500/20">
+        <div class="p-7 rounded-3xl crystal-panel relative hover:border-amber-500/50 transition group">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600/20 to-yellow-500/20 text-amber-400 font-black flex items-center justify-center mb-5 text-lg border border-amber-500/30 shadow-inner group-hover:scale-105 transition">
             02
           </div>
           <h3 class="text-lg font-bold text-white mb-2">1-Minute Setup</h3>
-          <p class="text-xs text-slate-400 leading-relaxed">
+          <p class="text-xs text-stone-300 leading-relaxed">
             Copy our lightweight snippet and paste it once inside your theme before <code>&lt;/head&gt;</code>. Zero coding skills required.
           </p>
         </div>
 
         <!-- Step 3 -->
-        <div class="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 relative hover:border-cyan-500/50 transition">
-          <div class="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-400 font-extrabold flex items-center justify-center mb-4 text-base border border-cyan-500/20">
+        <div class="p-7 rounded-3xl crystal-panel relative hover:border-amber-500/50 transition group">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600/20 to-yellow-500/20 text-amber-400 font-black flex items-center justify-center mb-5 text-lg border border-amber-500/30 shadow-inner group-hover:scale-105 transition">
             03
           </div>
           <h3 class="text-lg font-bold text-white mb-2">Sleep &amp; Rank Daily</h3>
-          <p class="text-xs text-slate-400 leading-relaxed">
+          <p class="text-xs text-stone-300 leading-relaxed">
             You rest, our agent works. Every 24 hours, RankSleep SEO automatically scans and pushes fresh optimizations in the background.
           </p>
         </div>
@@ -296,29 +529,29 @@
   </main>
 
   <!-- Fix / Onboarding Modal -->
-  <div id="fixModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-8 shadow-2xl space-y-6">
+  <div id="fixModal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="crystal-panel-highlight border border-amber-500/30 rounded-3xl max-w-lg w-full p-8 shadow-2xl space-y-6">
       <div class="flex justify-between items-center">
         <div>
           <h3 class="text-xl font-extrabold text-white">Connect Site &amp; Deploy Fixes</h3>
-          <p class="text-xs text-slate-400 mt-0.5">One-time 60-second setup. Runs on 100% daily autopilot.</p>
+          <p class="text-xs text-stone-400 mt-0.5">One-time 60-second setup. Runs on 100% daily autopilot.</p>
         </div>
-        <button onclick="closeFixModal()" class="text-slate-500 hover:text-white">&times;</button>
+        <button onclick="closeFixModal()" class="w-8 h-8 rounded-full apple-secondary-btn text-stone-400 hover:text-white flex items-center justify-center font-bold text-sm transition">&times;</button>
       </div>
 
-      <div class="p-4 rounded-xl bg-blue-950/40 border border-blue-800/40 text-xs text-blue-300 flex items-center justify-between">
-        <span>Selected Plan: <strong id="selectedPlanLabel">$180/mo - AI On-Page &amp; Schema</strong></span>
-        <span class="text-[10px] bg-emerald-500/20 text-emerald-400 font-bold px-2 py-0.5 rounded border border-emerald-500/30">24/7 Autopilot</span>
+      <div class="p-4 rounded-2xl crystal-panel border border-amber-500/25 text-xs text-amber-200 flex items-center justify-between">
+        <span>Selected Plan: <strong id="selectedPlanLabel" class="text-white">$90/mo - AI On-Page &amp; Schema</strong></span>
+        <span class="text-[10px] bg-amber-500/20 text-amber-300 font-bold px-2.5 py-0.5 rounded-full border border-amber-500/40">24/7 Autopilot</span>
       </div>
 
       <!-- Quick Platform Connect Tabs -->
-      <div class="space-y-4">
-        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Select Platform</label>
+      <div class="space-y-3">
+        <label class="block text-xs font-bold uppercase tracking-wider text-stone-400">Select Platform</label>
         <div class="grid grid-cols-2 gap-3">
-          <button id="wpTab" onclick="setPlatform('wp')" class="p-4 rounded-xl border border-blue-500 bg-blue-500/10 text-white font-bold text-sm text-center">
+          <button id="wpTab" onclick="setPlatform('wp')" class="p-3.5 rounded-xl apple-crystal-btn font-bold text-sm text-center shadow-lg transition">
             WordPress
           </button>
-          <button id="shopifyTab" onclick="setPlatform('shopify')" class="p-4 rounded-xl border border-slate-800 bg-slate-950 text-slate-400 font-bold text-sm text-center hover:border-slate-700">
+          <button id="shopifyTab" onclick="setPlatform('shopify')" class="p-3.5 rounded-xl apple-secondary-btn text-stone-400 font-bold text-sm text-center hover:border-amber-500/40 transition">
             Shopify
           </button>
         </div>
@@ -326,130 +559,132 @@
 
       <!-- WordPress Step -->
       <div id="wpContent" class="space-y-4">
-        <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 space-y-2">
+        <div class="p-4 rounded-2xl crystal-panel border border-stone-800 text-xs text-stone-300 space-y-2">
           <p class="font-bold text-white flex items-center gap-2">
             <span>📦</span> WordPress 1-Click Plugin Setup:
           </p>
-          <ol class="list-decimal list-inside space-y-1.5 text-slate-400 text-[11px]">
+          <ol class="list-decimal list-inside space-y-1.5 text-stone-400 text-[11px]">
             <li>Download the <code>instant-seo-agent.zip</code> plugin using the button below.</li>
             <li>In your WordPress Admin, go to <strong>Plugins &rarr; Add New &rarr; Upload Plugin</strong>.</li>
             <li>Select the downloaded zip file, click <strong>Install Now</strong>, then click <strong>Activate</strong>.</li>
             <li>Done! Your WordPress SEO runs on 24/7 autopilot.</li>
           </ol>
         </div>
-        <a href="/api/download-plugin" class="block text-center w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition text-sm shadow-lg shadow-blue-600/30">
+        <a href="/api/download-plugin" class="block text-center w-full apple-crystal-btn font-bold py-3.5 rounded-xl transition text-sm shadow-xl shadow-amber-600/25">
           ⬇️ Download WP Helper Plugin (.zip)
         </a>
 
         <!-- Dedicated WordPress Visual Guide Link -->
-        <a href="/guide/wordpress" target="_blank" class="block text-center w-full bg-cyan-950/60 hover:bg-cyan-900/60 text-cyan-300 font-bold py-2.5 rounded-xl border border-cyan-700/50 transition text-xs flex items-center justify-center gap-2">
+        <a href="/guide/wordpress" target="_blank" class="block text-center w-full apple-secondary-btn text-amber-300 font-bold py-2.5 rounded-xl border border-amber-500/30 transition text-xs flex items-center justify-center gap-2 hover:bg-amber-500/10">
           <span>🖼️ Open 5-Step Visual Guide with Screenshots &rarr;</span>
         </a>
       </div>
 
       <!-- Shopify Step -->
       <div id="shopifyContent" class="hidden space-y-4">
-        <p class="text-xs text-slate-300">
+        <p class="text-xs text-stone-300">
           Enter your Shopify store URL to trigger the 1-click Direct App Install:
         </p>
-        <input id="shopifyStoreUrl" type="text" placeholder="your-store.myshopify.com" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500" />
-        <button onclick="connectShopify()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition text-sm">
+        <input id="shopifyStoreUrl" type="text" placeholder="your-store.myshopify.com" class="w-full bg-stone-950/90 border border-stone-800 focus:border-amber-500/60 p-3 rounded-xl text-sm text-white focus:outline-none" />
+        <button onclick="connectShopify()" class="w-full apple-crystal-btn font-bold py-3.5 rounded-xl transition text-sm shadow-xl shadow-amber-600/25 cursor-pointer">
           Connect Shopify Store &rarr;
         </button>
 
         <!-- Dedicated Visual Guide Link -->
-        <a href="/guide/shopify" target="_blank" class="block text-center w-full bg-cyan-950/60 hover:bg-cyan-900/60 text-cyan-300 font-bold py-2.5 rounded-xl border border-cyan-700/50 transition text-xs flex items-center justify-center gap-2">
+        <a href="/guide/shopify" target="_blank" class="block text-center w-full apple-secondary-btn text-amber-300 font-bold py-2.5 rounded-xl border border-amber-500/30 transition text-xs flex items-center justify-center gap-2 hover:bg-amber-500/10">
           <span>🖼️ Open 5-Step Visual Guide with Screenshots &rarr;</span>
         </a>
 
         <!-- Step-by-Step Visual Paste Guide Drawer (Only in Shopify Tab) -->
-        <div class="pt-2 border-t border-slate-800">
+        <div class="pt-2 border-t border-stone-800">
           <details class="group">
-            <summary class="cursor-pointer text-xs font-bold text-cyan-400 flex items-center justify-between hover:text-cyan-300 select-none">
+            <summary class="cursor-pointer text-xs font-bold text-amber-400 flex items-center justify-between hover:text-amber-300 select-none">
               <span>📖 Quick 4-Step Summary</span>
               <span class="group-open:rotate-180 transition transform text-base">&darr;</span>
             </summary>
-            <div class="mt-3 p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-[11px] text-slate-400">
+            <div class="mt-3 p-3.5 rounded-xl crystal-panel border border-stone-800 space-y-2 text-[11px] text-stone-400">
               <p>1. Shopify Admin &rarr; <strong>Online Store</strong> &rarr; <strong>Themes</strong></p>
               <p>2. Active Theme <strong>(...)</strong> &rarr; <strong>Edit code</strong></p>
               <p>3. Search &amp; Open <strong>layout/theme.liquid</strong></p>
               <p>4. Paste snippet under <code>&lt;head&gt;</code> &amp; click <strong>Save</strong></p>
-              <a href="/guide/shopify" target="_blank" class="text-cyan-400 hover:underline font-bold inline-block pt-1">View Full Screenshots Guide &rarr;</a>
+              <a href="/guide/shopify" target="_blank" class="text-amber-400 hover:underline font-bold inline-block pt-1">View Full Screenshots Guide &rarr;</a>
             </div>
           </details>
         </div>
       </div>
 
       <div class="pt-2 text-center">
-        <button onclick="closeFixModal()" class="text-xs text-slate-500 hover:text-slate-400">Close Window</button>
+        <button onclick="closeFixModal()" class="text-xs text-stone-500 hover:text-stone-400 cursor-pointer">Close Window</button>
       </div>
     </div>
   </div>
 
-  <!-- LemonSqueezy Compliance Footer -->
-  <footer class="border-t border-slate-800/80 bg-slate-950 py-12 mt-20">
-    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-slate-500">
+  <!-- Compliance & Trust Footer -->
+  <footer class="border-t border-amber-500/15 bg-stone-950/80 backdrop-blur-xl py-12 mt-20">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-stone-400">
       <div class="flex items-center space-x-3">
-        <div class="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-sm font-bold text-white">🌙</div>
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-600 via-amber-500 to-yellow-300 flex items-center justify-center font-black text-stone-950 shadow-md shadow-amber-500/20">
+          🌙
+        </div>
         <div>
-          <span class="font-bold text-white text-sm">RankSleep SEO</span>
-          <p class="text-[11px] text-slate-500">Autonomous 1-Click SEO Cloud • We Optimize. You Rest.</p>
+          <span class="font-extrabold text-sm crystal-gold-text">RankSleep SEO</span>
+          <p class="text-[11px] text-stone-500">Autonomous 1-Click SEO Cloud • We Optimize. You Rest.</p>
         </div>
       </div>
 
-      <div class="flex flex-wrap justify-center gap-6 text-slate-400">
-        <a href="#how-it-works" class="hover:text-white transition">How It Works</a>
-        <a href="#pricing" class="hover:text-white transition">Pricing</a>
-        <button onclick="openLegalModal('terms')" class="hover:text-white transition">Terms of Service</button>
-        <button onclick="openLegalModal('privacy')" class="hover:text-white transition">Privacy Policy</button>
-        <button onclick="openLegalModal('refund')" class="hover:text-emerald-400 transition font-medium">30-Day Refund Guarantee</button>
-        <button onclick="openContactModal()" class="hover:text-cyan-400 transition font-medium flex items-center gap-1"><span>💬</span> Contact Support</button>
+      <div class="flex flex-wrap justify-center gap-6 text-stone-300">
+        <a href="#how-it-works" class="hover:text-amber-300 transition">How It Works</a>
+        <a href="#pricing" class="hover:text-amber-300 transition">Pricing</a>
+        <button onclick="openLegalModal('terms')" class="hover:text-amber-300 transition cursor-pointer">Terms of Service</button>
+        <button onclick="openLegalModal('privacy')" class="hover:text-amber-300 transition cursor-pointer">Privacy Policy</button>
+        <button onclick="openLegalModal('refund')" class="hover:text-amber-300 transition font-medium cursor-pointer">30-Day Refund Guarantee</button>
+        <button onclick="openContactModal()" class="hover:text-amber-300 transition font-medium flex items-center gap-1 cursor-pointer"><span>💬</span> Contact Support</button>
       </div>
 
       <div class="text-right">
-        <span class="block">Support: <button onclick="openContactModal()" class="text-blue-400 hover:underline">support@ranksleepseo.com</button></span>
-        <span class="text-[10px] text-slate-600">&copy; 2026 RankSleep SEO Inc. All rights reserved.</span>
+        <span class="block">Support: <button onclick="openContactModal()" class="text-amber-400 hover:underline">support@ranksleepseo.com</button></span>
+        <span class="text-[10px] text-stone-500">&copy; 2026 RankSleep SEO Inc. All rights reserved.</span>
       </div>
     </div>
   </footer>
 
-  <!-- Legal & Compliance Modal (LemonSqueezy Standard) -->
+  <!-- Legal & Compliance Modal -->
   <div id="legalModal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative max-h-[85vh] flex flex-col">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+    <div class="crystal-panel-highlight border border-amber-500/30 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between border-b border-amber-500/20 pb-4">
         <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-xl bg-blue-600/20 text-blue-400 flex items-center justify-center font-bold text-lg">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center font-bold text-lg border border-amber-500/30">
             ⚖️
           </div>
           <div>
             <h3 class="text-lg font-bold text-white">Legal &amp; Customer Trust Center</h3>
-            <p class="text-xs text-slate-400">Official terms, privacy standards, and guarantees for RankSleep SEO</p>
+            <p class="text-xs text-stone-400">Official terms, privacy standards, and guarantees for RankSleep SEO</p>
           </div>
         </div>
-        <button onclick="closeLegalModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center font-bold text-sm transition">
+        <button onclick="closeLegalModal()" class="w-8 h-8 rounded-full apple-secondary-btn text-stone-400 hover:text-white flex items-center justify-center font-bold text-sm transition">
           &times;
         </button>
       </div>
 
       <!-- Tab Switcher -->
-      <div class="grid grid-cols-3 gap-2 bg-slate-950 p-1.5 rounded-2xl border border-slate-800">
-        <button id="legalTabTerms" onclick="switchLegalTab('terms')" class="py-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow">
+      <div class="grid grid-cols-3 gap-2 bg-stone-950/80 p-1.5 rounded-2xl border border-stone-800">
+        <button id="legalTabTerms" onclick="switchLegalTab('terms')" class="py-2 rounded-xl text-xs font-bold transition apple-crystal-btn text-white shadow">
           Terms of Service
         </button>
-        <button id="legalTabPrivacy" onclick="switchLegalTab('privacy')" class="py-2 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white">
+        <button id="legalTabPrivacy" onclick="switchLegalTab('privacy')" class="py-2 rounded-xl text-xs font-bold transition text-stone-400 hover:text-white">
           Privacy Policy
         </button>
-        <button id="legalTabRefund" onclick="switchLegalTab('refund')" class="py-2 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white">
+        <button id="legalTabRefund" onclick="switchLegalTab('refund')" class="py-2 rounded-xl text-xs font-bold transition text-stone-400 hover:text-white">
           30-Day Guarantee
         </button>
       </div>
 
       <!-- Tab Contents (Scrollable) -->
-      <div class="overflow-y-auto pr-2 space-y-4 text-xs text-slate-300 leading-relaxed max-h-[55vh]">
+      <div class="overflow-y-auto pr-2 space-y-4 text-xs text-stone-300 leading-relaxed max-h-[55vh]">
         
         <!-- TERMS -->
         <div id="legalContentTerms" class="space-y-4">
-          <div class="p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-300 text-[11px]">
+          <div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-200 text-[11px]">
             <strong>Summary:</strong> RankSleep SEO is an autonomous cloud service. You maintain full ownership of your site. You can cancel at any time with 1-click.
           </div>
           <div class="space-y-2">
@@ -458,7 +693,7 @@
           </div>
           <div class="space-y-2">
             <h4 class="font-bold text-white text-sm">2. Subscriptions &amp; Billing</h4>
-            <p>Our Starter ($50/month) and Pro Autopilot ($180/month) plans are billed on a recurring monthly cycle managed securely by Lemon Squeezy (our authorized Merchant of Record). You may cancel anytime via the customer billing portal without cancellation penalties.</p>
+            <p>Our Starter ($50/month, $25 with early-bird discount) and Pro Autopilot ($180/month, $90 with early-bird discount) plans are billed on a recurring monthly cycle managed securely by our authorized Merchant of Record. You may cancel anytime via the customer billing portal without cancellation penalties.</p>
           </div>
           <div class="space-y-2">
             <h4 class="font-bold text-white text-sm">3. Zero Database Overwriting</h4>
@@ -468,7 +703,7 @@
 
         <!-- PRIVACY -->
         <div id="legalContentPrivacy" class="hidden space-y-4">
-          <div class="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-[11px]">
+          <div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-200 text-[11px]">
             <strong>Commitment:</strong> We never sell customer data. All analytics and audit metrics are encrypted end-to-end.
           </div>
           <div class="space-y-2">
@@ -481,13 +716,13 @@
           </div>
           <div class="space-y-2">
             <h4 class="font-bold text-white text-sm">3. Payment Information</h4>
-            <p>RankSleep SEO never receives or stores your credit card numbers. All billing transactions are encrypted and processed by Lemon Squeezy complying with PCI-DSS Level 1 security.</p>
+            <p>RankSleep SEO never receives or stores your credit card numbers. All billing transactions are encrypted and processed with PCI-DSS Level 1 compliance.</p>
           </div>
         </div>
 
         <!-- REFUND -->
         <div id="legalContentRefund" class="hidden space-y-4">
-          <div class="p-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-[11px]">
+          <div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-200 text-[11px]">
             <strong>Ironclad Guarantee:</strong> 30 days to test. If you are not satisfied for any reason, get a 100% full refund.
           </div>
           <div class="space-y-2">
@@ -496,7 +731,7 @@
           </div>
           <div class="space-y-2">
             <h4 class="font-bold text-white text-sm">2. Hassle-Free Refund Process</h4>
-            <p>No phone calls, no long questionnaires, and no fine-print traps. Simply send an email to <a href="mailto:support@ranksleepseo.com" class="text-blue-400 underline">support@ranksleepseo.com</a> with your store URL and Lemon Squeezy order number.</p>
+            <p>No phone calls, no long questionnaires, and no fine-print traps. Simply send an email to <a href="mailto:support@ranksleepseo.com" class="text-amber-400 underline">support@ranksleepseo.com</a> with your store URL.</p>
           </div>
           <div class="space-y-2">
             <h4 class="font-bold text-white text-sm">3. Fast Turnaround</h4>
@@ -506,9 +741,9 @@
 
       </div>
 
-      <div class="pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-500">
-        <span>Questions? Email <a href="mailto:support@ranksleepseo.com" class="text-blue-400 hover:underline">support@ranksleepseo.com</a></span>
-        <button onclick="closeLegalModal()" class="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold transition">
+      <div class="pt-4 border-t border-amber-500/20 flex items-center justify-between text-xs text-stone-400">
+        <span>Questions? Email <a href="mailto:support@ranksleepseo.com" class="text-amber-400 hover:underline">support@ranksleepseo.com</a></span>
+        <button onclick="closeLegalModal()" class="px-5 py-2 rounded-xl apple-crystal-btn font-bold transition cursor-pointer">
           I Understand
         </button>
       </div>
@@ -517,18 +752,18 @@
 
   <!-- Contact & Customer Support Modal (Direct to Gmail with Screenshot) -->
   <div id="contactModal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-5 shadow-2xl relative max-h-[90vh] flex flex-col">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+    <div class="crystal-panel-highlight border border-amber-500/30 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-5 shadow-2xl relative max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between border-b border-amber-500/20 pb-4">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-blue-600/20 text-blue-400 flex items-center justify-center font-bold text-xl shadow-lg shadow-blue-500/10">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center font-bold text-xl shadow-lg border border-amber-500/30">
             💬
           </div>
           <div>
             <h3 class="text-lg font-bold text-white">Contact RankSleep Support</h3>
-            <p class="text-xs text-slate-400">Our engineering team replies to your email within 2-4 hours</p>
+            <p class="text-xs text-stone-400">Our engineering team replies to your email within 2-4 hours</p>
           </div>
         </div>
-        <button onclick="closeContactModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center font-bold text-sm transition">
+        <button onclick="closeContactModal()" class="w-8 h-8 rounded-full apple-secondary-btn text-stone-400 hover:text-white flex items-center justify-center font-bold text-sm transition">
           &times;
         </button>
       </div>
@@ -539,37 +774,37 @@
         <input type="hidden" name="_subject" value="🚀 New RankSleep SEO Client Inquiry">
 
         <div class="space-y-1">
-          <label class="block font-bold text-slate-300">Your Name / Business Name *</label>
-          <input type="text" name="name" required placeholder="e.g. John Doe / Vilonix Fashion" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-xl text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500 transition text-xs" />
+          <label class="block font-bold text-stone-300">Your Name / Business Name *</label>
+          <input type="text" name="name" required placeholder="e.g. John Doe / Vilonix Fashion" class="w-full bg-stone-950/90 border border-stone-800 focus:border-amber-500/60 p-2.5 rounded-xl text-stone-200 placeholder-stone-600 focus:outline-none transition text-xs" />
         </div>
 
         <div class="space-y-1">
-          <label class="block font-bold text-slate-300">Your Email Address * (Where we will reply)</label>
-          <input type="email" name="email" required placeholder="john@yourstore.com" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-xl text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500 transition text-xs" />
+          <label class="block font-bold text-stone-300">Your Email Address * (Where we will reply)</label>
+          <input type="email" name="email" required placeholder="john@yourstore.com" class="w-full bg-stone-950/90 border border-stone-800 focus:border-amber-500/60 p-2.5 rounded-xl text-stone-200 placeholder-stone-600 focus:outline-none transition text-xs" />
         </div>
 
         <div class="space-y-1">
-          <label class="block font-bold text-slate-300">Store / Website URL (Optional)</label>
-          <input type="text" name="store_url" placeholder="https://mystore.com" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-xl text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500 transition text-xs" />
+          <label class="block font-bold text-stone-300">Store / Website URL (Optional)</label>
+          <input type="text" name="store_url" placeholder="https://mystore.com" class="w-full bg-stone-950/90 border border-stone-800 focus:border-amber-500/60 p-2.5 rounded-xl text-stone-200 placeholder-stone-600 focus:outline-none transition text-xs" />
         </div>
 
         <div class="space-y-1">
-          <label class="block font-bold text-slate-300">How can we help? *</label>
-          <textarea name="message" rows="3" required placeholder="Tell us about your SEO issue, custom Shopify setup, or question..." class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-xl text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500 transition text-xs resize-none"></textarea>
+          <label class="block font-bold text-stone-300">How can we help? *</label>
+          <textarea name="message" rows="3" required placeholder="Tell us about your SEO issue, custom Shopify setup, or question..." class="w-full bg-stone-950/90 border border-stone-800 focus:border-amber-500/60 p-2.5 rounded-xl text-stone-200 placeholder-stone-600 focus:outline-none transition text-xs resize-none"></textarea>
         </div>
 
         <!-- Image / Screenshot Upload Field -->
         <div class="space-y-1.5">
-          <label class="block font-bold text-slate-300">Attach Screenshot or Store Image (Optional)</label>
-          <div onclick="document.getElementById('contactAttachmentInput').click()" class="border-2 border-dashed border-slate-800 hover:border-blue-500/50 bg-slate-950/60 rounded-xl p-3 text-center cursor-pointer transition group">
+          <label class="block font-bold text-stone-300">Attach Screenshot or Store Image (Optional)</label>
+          <div onclick="document.getElementById('contactAttachmentInput').click()" class="border-2 border-dashed border-stone-800 hover:border-amber-500/50 bg-stone-950/60 rounded-xl p-3 text-center cursor-pointer transition group">
             <input type="file" id="contactAttachmentInput" name="attachment" accept="image/*,.pdf" class="hidden" onchange="previewContactFile(this)" />
             <div id="dropzoneEmpty" class="space-y-1">
               <span class="text-xl">📷</span>
-              <p class="text-[11px] text-slate-400 group-hover:text-blue-400 transition font-medium">Click to upload screenshot or store image (PNG, JPG, PDF up to 5MB)</p>
+              <p class="text-[11px] text-stone-400 group-hover:text-amber-300 transition font-medium">Click to upload screenshot or store image (PNG, JPG, PDF up to 5MB)</p>
             </div>
-            <div id="dropzonePreview" class="hidden flex items-center justify-center gap-2 text-emerald-400 text-xs font-bold py-1">
+            <div id="dropzonePreview" class="hidden flex items-center justify-center gap-2 text-amber-300 text-xs font-bold py-1">
               <span>✅ Attached:</span>
-              <span id="attachedFileName" class="text-slate-200 truncate max-w-[200px]"></span>
+              <span id="attachedFileName" class="text-stone-200 truncate max-w-[200px]"></span>
               <button type="button" onclick="removeContactFile(event)" class="text-rose-400 hover:text-rose-300 ml-2">&times; Remove</button>
             </div>
           </div>
@@ -577,7 +812,7 @@
 
         <div id="contactFormStatus" class="hidden text-xs p-2.5 rounded-xl font-medium"></div>
 
-        <button type="submit" id="contactSubmitBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30">
+        <button type="submit" id="contactSubmitBtn" class="w-full apple-crystal-btn font-bold py-3 rounded-xl transition text-xs flex items-center justify-center gap-2 shadow-xl shadow-amber-600/30 cursor-pointer">
           <span>Send Message &rarr;</span>
         </button>
       </form>
@@ -589,11 +824,11 @@
         </div>
         <div class="space-y-1.5">
           <h4 class="text-lg font-extrabold text-white">Message &amp; Screenshot Sent!</h4>
-          <p class="text-xs text-slate-300 max-w-sm mx-auto">
+          <p class="text-xs text-stone-300 max-w-sm mx-auto">
             Thank you! Your request has been delivered to our engineering support team. We will review your store details and email you back within 2-4 hours.
           </p>
         </div>
-        <button onclick="closeContactModal()" class="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition">
+        <button onclick="closeContactModal()" class="px-6 py-2.5 rounded-xl apple-crystal-btn font-bold text-xs transition cursor-pointer">
           Done &amp; Close Window
         </button>
       </div>
@@ -704,7 +939,7 @@
 
     function selectPlan(plan) {
       currentSelectedPlan = plan;
-      const label = plan === 'starter_50' ? '$50/mo - Technical SEO' : '$180/mo - AI On-Page & Schema';
+      const label = plan === 'starter_50' ? '$25/mo (Early Bird) - Technical SEO' : '$90/mo (Early Bird) - AI On-Page & Schema';
       document.getElementById('selectedPlanLabel').innerText = label;
       openFixModal();
     }
@@ -716,13 +951,13 @@
       const shopifyContent = document.getElementById('shopifyContent');
 
       if (platform === 'wp') {
-        wpTab.className = "p-4 rounded-xl border border-blue-500 bg-blue-500/10 text-white font-bold text-sm text-center";
-        shopifyTab.className = "p-4 rounded-xl border border-slate-800 bg-slate-950 text-slate-400 font-bold text-sm text-center hover:border-slate-700";
+        wpTab.className = "p-3.5 rounded-xl apple-crystal-btn font-bold text-sm text-center shadow-lg transition";
+        shopifyTab.className = "p-3.5 rounded-xl apple-secondary-btn text-stone-400 font-bold text-sm text-center hover:border-amber-500/40 transition cursor-pointer";
         wpContent.classList.remove('hidden');
         shopifyContent.classList.add('hidden');
       } else {
-        shopifyTab.className = "p-4 rounded-xl border border-emerald-500 bg-emerald-500/10 text-white font-bold text-sm text-center";
-        wpTab.className = "p-4 rounded-xl border border-slate-800 bg-slate-950 text-slate-400 font-bold text-sm text-center hover:border-slate-700";
+        shopifyTab.className = "p-3.5 rounded-xl apple-crystal-btn font-bold text-sm text-center shadow-lg transition cursor-pointer";
+        wpTab.className = "p-3.5 rounded-xl apple-secondary-btn text-stone-400 font-bold text-sm text-center hover:border-amber-500/40 transition cursor-pointer";
         shopifyContent.classList.remove('hidden');
         wpContent.classList.add('hidden');
       }
@@ -738,14 +973,14 @@
       const shopifyContent = document.getElementById('shopifyContent');
       shopifyContent.innerHTML = `
         <div class="space-y-4 py-2">
-          <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs space-y-2 text-slate-300">
-            <div class="flex items-center gap-2 text-emerald-400 font-bold">
+          <div class="p-4 rounded-2xl crystal-panel border border-amber-500/30 font-mono text-xs space-y-2 text-stone-200">
+            <div class="flex items-center gap-2 text-amber-300 font-bold">
               <span class="animate-spin text-base">⚙️</span> AutoSEO Agent Deploying to ${storeInput}...
             </div>
-            <div id="agentLog1" class="text-slate-400">&gt; Connecting to store catalog &amp; meta structure...</div>
-            <div id="agentLog2" class="hidden text-slate-400">&gt; Running Gemini AI optimization on missing titles &amp; descriptions...</div>
-            <div id="agentLog3" class="hidden text-slate-400">&gt; Generating keywords for 3 images missing Alt-tags...</div>
-            <div id="agentLog4" class="hidden text-emerald-400 font-bold">&gt; SUCCESS: 100% On-Page &amp; Schema Optimizations Generated!</div>
+            <div id="agentLog1" class="text-stone-400">&gt; Connecting to store catalog &amp; meta structure...</div>
+            <div id="agentLog2" class="hidden text-stone-400">&gt; Running Gemini AI optimization on missing titles &amp; descriptions...</div>
+            <div id="agentLog3" class="hidden text-stone-400">&gt; Generating keywords for images missing Alt-tags...</div>
+            <div id="agentLog4" class="hidden text-amber-300 font-bold">&gt; SUCCESS: 100% On-Page &amp; Schema Optimizations Generated!</div>
           </div>
         </div>
       `;
@@ -786,70 +1021,70 @@
       const shopifyContent = document.getElementById('shopifyContent');
       shopifyContent.innerHTML = `
         <div class="space-y-4 pt-2 max-h-[460px] overflow-y-auto pr-1">
-          <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between">
-            <div class="flex items-center gap-2 text-emerald-400 text-xs font-bold">
+          <div class="p-3.5 rounded-2xl crystal-panel border border-amber-500/30 flex items-center justify-between">
+            <div class="flex items-center gap-2 text-amber-300 text-xs font-bold">
               <span>✅</span> AI Fixes Generated for ${store}
             </div>
-            <span class="text-xs font-mono font-bold bg-emerald-500 text-slate-950 px-2 py-0.5 rounded">Score: 98/100</span>
+            <span class="text-xs font-mono font-bold bg-amber-500 text-stone-950 px-2.5 py-0.5 rounded-md">Score: 98/100</span>
           </div>
 
           <!-- Before vs After Card -->
-          <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3 text-xs">
-            <h4 class="font-bold text-white uppercase tracking-wider text-[11px] text-blue-400">Before vs After Comparison</h4>
+          <div class="p-4 rounded-2xl crystal-panel border border-stone-800 space-y-3 text-xs">
+            <h4 class="font-bold text-white uppercase tracking-wider text-[11px] text-amber-300">Before vs After Comparison</h4>
             
             <div class="space-y-1">
-              <span class="text-slate-500 block">Title Tag:</span>
-              <div class="p-2 rounded bg-rose-950/30 border border-rose-900/40 text-rose-300 line-through">
+              <span class="text-stone-400 block">Title Tag:</span>
+              <div class="p-2.5 rounded-xl bg-rose-950/20 border border-rose-900/30 text-rose-300 line-through">
                 ${data.original.title || '(Empty / Missing)'}
               </div>
-              <div class="p-2 rounded bg-emerald-950/30 border border-emerald-900/40 text-emerald-300 font-semibold flex items-center justify-between">
+              <div class="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-200 font-semibold flex items-center justify-between">
                 <span>${opt.title}</span>
-                <span class="text-[10px] text-emerald-400 uppercase font-bold">Optimal</span>
+                <span class="text-[10px] text-amber-400 uppercase font-bold">Optimal</span>
               </div>
             </div>
 
             <div class="space-y-1">
-              <span class="text-slate-500 block">Meta Description:</span>
-              <div class="p-2 rounded bg-rose-950/30 border border-rose-900/40 text-rose-300 line-through">
+              <span class="text-stone-400 block">Meta Description:</span>
+              <div class="p-2.5 rounded-xl bg-rose-950/20 border border-rose-900/30 text-rose-300 line-through">
                 ${data.original.description || '(Missing Meta Description)'}
               </div>
-              <div class="p-2 rounded bg-emerald-950/30 border border-emerald-900/40 text-emerald-300 font-semibold">
+              <div class="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-200 font-semibold">
                 ${opt.meta_description}
               </div>
             </div>
 
             <div class="space-y-1">
-              <span class="text-slate-500 block">Image Alt-Tags (Auto-Generated):</span>
-              <ul class="space-y-1 text-slate-300">
-                ${opt.image_alt_tags.map(t => `<li class="flex items-center gap-1.5 text-emerald-300"><span>🏷️</span> ${t}</li>`).join('')}
+              <span class="text-stone-400 block">Image Alt-Tags (Auto-Generated):</span>
+              <ul class="space-y-1 text-stone-300">
+                ${opt.image_alt_tags.map(t => `<li class="flex items-center gap-1.5 text-amber-300"><span>🏷️</span> ${t}</li>`).join('')}
               </ul>
             </div>
           </div>
 
           <!-- Deploy Options -->
-          <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+          <div class="p-4 rounded-2xl crystal-panel border border-stone-800 space-y-3">
             <h4 class="font-bold text-white text-xs">Choose How to Apply to Your Store:</h4>
             
             <!-- Option 1: 1-Click Liquid Snippet -->
-            <div class="p-3 rounded-lg bg-slate-950 border border-slate-800 space-y-2">
+            <div class="p-3.5 rounded-xl crystal-panel border border-stone-800 space-y-2.5">
               <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-white">⚡ Option 1: 1-Click Theme Snippet (Instant)</span>
                 <div class="flex items-center gap-2">
-                  <button onclick="copySnippet()" id="copyBtn" class="bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-bold px-3 py-1 rounded">Copy Snippet</button>
-                  <button onclick="verifyAndRescan()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold px-3 py-1 rounded flex items-center gap-1">
+                  <button onclick="copySnippet()" id="copyBtn" class="apple-crystal-btn text-[11px] font-bold px-3 py-1.5 rounded-lg cursor-pointer">Copy Snippet</button>
+                  <button onclick="verifyAndRescan()" class="apple-secondary-btn text-amber-300 border-amber-500/30 text-[11px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 cursor-pointer">
                     <span>🔍 Verify &amp; Re-Scan</span>
                   </button>
                 </div>
               </div>
-              <p class="text-[11px] text-slate-400">Paste inside your Shopify <code>theme.liquid</code> file before <code>&lt;/head&gt;</code> to apply instantly!</p>
+              <p class="text-[11px] text-stone-400">Paste inside your Shopify <code>theme.liquid</code> file before <code>&lt;/head&gt;</code> to apply instantly!</p>
             </div>
 
             <!-- Option 2: Shopify App / Partner OAuth -->
-            <div id="option2Box" class="p-3 rounded-lg bg-slate-950 border border-slate-800 space-y-2">
+            <div id="option2Box" class="p-3.5 rounded-xl crystal-panel border border-stone-800 space-y-2.5">
               <span class="text-xs font-bold text-white">🔑 Option 2: Direct API Access Token</span>
               <div class="flex gap-2">
-                <input id="shopifyToken" type="password" placeholder="shpat_xxxx (Shopify Admin API Token)" class="flex-1 bg-slate-900 border border-slate-700 px-3 py-1.5 rounded text-xs text-white focus:outline-none focus:border-emerald-500" />
-                <button id="pushLiveBtn" onclick="pushShopifyLive()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-1.5 rounded transition flex items-center gap-1.5">
+                <input id="shopifyToken" type="password" placeholder="shpat_xxxx (Shopify Admin API Token)" class="flex-1 bg-stone-950/80 border border-stone-800 px-3 py-2 rounded-xl text-xs text-white focus:outline-none focus:border-amber-500" />
+                <button id="pushLiveBtn" onclick="pushShopifyLive()" class="apple-crystal-btn text-white font-bold text-xs px-4 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer">
                   <span>Push Live</span>
                 </button>
               </div>
@@ -875,7 +1110,7 @@
       pushBtn.disabled = true;
       pushBtn.innerHTML = '<span class="animate-spin">⚙️</span> <span>Connecting...</span>';
       statusDiv.classList.remove('hidden');
-      statusDiv.innerHTML = '<div class="text-blue-400 font-mono flex items-center gap-2"><span>🔄</span> Authenticating token &amp; pushing optimizations to Shopify...</div>';
+      statusDiv.innerHTML = '<div class="text-amber-300 font-mono flex items-center gap-2"><span>🔄</span> Authenticating token &amp; pushing optimizations to Shopify...</div>';
 
       try {
         const res = await fetch('/api/shopify/push-live', {
@@ -891,7 +1126,7 @@
         if (result.status === 'error') {
           pushBtn.disabled = false;
           pushBtn.innerHTML = '<span>Try Again</span>';
-          statusDiv.innerHTML = `<div class="p-3 rounded bg-rose-950/60 border border-rose-800 text-rose-300 font-sans">
+          statusDiv.innerHTML = `<div class="p-3 rounded-xl bg-rose-950/60 border border-rose-800 text-rose-300 font-sans">
             <strong>❌ Shopify Error:</strong> ${result.message}
           </div>`;
         } else {
@@ -899,16 +1134,16 @@
           pushBtn.innerHTML = '<span>✅ Live</span>';
           const option2Box = document.getElementById('option2Box');
           option2Box.innerHTML = `
-            <div class="p-4 rounded-xl bg-gradient-to-r from-emerald-950/80 to-slate-900 border-2 border-emerald-500 text-center space-y-3">
-              <div class="inline-block p-2 rounded-full bg-emerald-500/20 text-2xl">🎉</div>
+            <div class="p-5 rounded-2xl crystal-panel-highlight border border-amber-500/40 text-center space-y-3">
+              <div class="inline-block p-2 rounded-full bg-amber-500/20 text-2xl">🎉</div>
               <h4 class="text-sm font-extrabold text-white">Successfully Deployed to Shopify!</h4>
-              <p class="text-xs text-emerald-300 font-medium">${result.message}</p>
-              <div class="p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-[11px] text-slate-300 font-mono space-y-1">
+              <p class="text-xs text-amber-200 font-medium">${result.message}</p>
+              <div class="p-3 rounded-xl crystal-panel border border-stone-800 text-[11px] text-stone-300 font-mono space-y-1">
                 <div>🏬 Store: <strong class="text-white">${result.shop_name}</strong></div>
-                <div>📦 Products &amp; Images Updated: <strong class="text-emerald-400">${result.products_updated} items</strong></div>
-                <div>🚀 SEO Health Status: <strong class="text-emerald-400">100% Active Autopilot</strong></div>
+                <div>📦 Products &amp; Images Updated: <strong class="text-amber-400">${result.products_updated} items</strong></div>
+                <div>🚀 SEO Health Status: <strong class="text-amber-400">100% Active Autopilot</strong></div>
               </div>
-              <button onclick="closeFixModal(); alert('SEO Autopilot is now actively managing your store rankings!')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-lg text-xs transition">
+              <button onclick="closeFixModal(); alert('SEO Autopilot is now actively managing your store rankings!')" class="w-full apple-crystal-btn font-bold py-2.5 rounded-xl text-xs transition cursor-pointer">
                 Done &amp; Close
               </button>
             </div>
@@ -1007,10 +1242,10 @@
         const btn = document.getElementById('legalTab' + t.charAt(0).toUpperCase() + t.slice(1));
         const content = document.getElementById('legalContent' + t.charAt(0).toUpperCase() + t.slice(1));
         if (t === tab) {
-          btn.className = 'py-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow';
+          btn.className = 'py-2 rounded-xl text-xs font-bold transition apple-crystal-btn text-white shadow';
           content.classList.remove('hidden');
         } else {
-          btn.className = 'py-2 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white';
+          btn.className = 'py-2 rounded-xl text-xs font-bold transition text-stone-400 hover:text-white';
           content.classList.add('hidden');
         }
       });
@@ -1143,6 +1378,32 @@
         btn.innerHTML = '<span>Send Message &rarr;</span>';
       }
     }
+
+    // ThreeUI Liquid Glass Pointer Tracking & Proximity Engine
+    (function initLiquidGlassOptics() {
+      const precisionQuery = window.matchMedia('(hover:hover) and (pointer:fine)');
+      if (!precisionQuery.matches) return;
+
+      document.addEventListener('pointermove', (e) => {
+        // Track specular highlight across all liquid glass buttons and dock items
+        const interactiveElements = document.querySelectorAll('.apple-crystal-btn, .apple-secondary-btn, .liquid-dock-rail, .liquid-dock-item');
+        interactiveElements.forEach((el) => {
+          const rect = el.getBoundingClientRect();
+          // Check if cursor is near or inside element
+          if (
+            e.clientX >= rect.left - 50 &&
+            e.clientX <= rect.right + 50 &&
+            e.clientY >= rect.top - 50 &&
+            e.clientY <= rect.bottom + 50
+          ) {
+            const x = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+            const y = Math.round(((e.clientY - rect.top) / rect.height) * 100);
+            el.style.setProperty('--pointer-x', `${x}%`);
+            el.style.setProperty('--pointer-y', `${y}%`);
+          }
+        });
+      }, { passive: true });
+    })();
   </script>
 </body>
 </html>
