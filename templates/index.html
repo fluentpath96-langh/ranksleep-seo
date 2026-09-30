@@ -16,45 +16,57 @@
       font-family: var(--font-sans);
       background-color: #080706;
       color: #f5f5f4;
-      background-image: 
-        radial-gradient(ellipse 90% 55% at 50% -20%, rgba(217, 119, 6, 0.20), transparent 75%),
-        radial-gradient(circle at 15% 35%, rgba(180, 83, 9, 0.10), transparent 45%),
-        radial-gradient(circle at 85% 65%, rgba(245, 158, 11, 0.08), transparent 40%),
-        radial-gradient(circle at 50% 90%, rgba(146, 64, 14, 0.08), transparent 50%);
-      background-attachment: fixed;
+      overflow-x: hidden;
     }
 
-    /* ── ThreeUI / Liquid Glass Panels ────────────────────────── */
+    /* Fixed background glow plane: decoupled from scroll for 120 FPS hardware acceleration */
+    .bg-glow-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      background-image: 
+        radial-gradient(ellipse 90% 55% at 50% -20%, rgba(217, 119, 6, 0.18), transparent 75%),
+        radial-gradient(circle at 15% 35%, rgba(180, 83, 9, 0.08), transparent 45%),
+        radial-gradient(circle at 85% 65%, rgba(245, 158, 11, 0.06), transparent 40%),
+        radial-gradient(circle at 50% 90%, rgba(146, 64, 14, 0.06), transparent 50%);
+      transform: translateZ(0);
+      will-change: transform;
+    }
+
+    /* ── High-Performance Liquid Glass Panels (Optimized GPU Blurring) ── */
     .crystal-panel {
       position: relative;
-      background: linear-gradient(165deg, rgba(28, 25, 23, 0.70) 0%, rgba(18, 16, 15, 0.85) 100%);
-      backdrop-filter: blur(28px) saturate(190%);
-      -webkit-backdrop-filter: blur(28px) saturate(190%);
-      border: 1px solid rgba(245, 158, 11, 0.22);
+      background: rgba(28, 25, 23, 0.72);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(245, 158, 11, 0.20);
       box-shadow: 
-        0 30px 60px -15px rgba(0, 0, 0, 0.85),
-        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        0 20px 45px -10px rgba(0, 0, 0, 0.8),
+        inset 0 1px 0 rgba(255, 255, 255, 0.14),
         inset 0 -1px 0 rgba(0, 0, 0, 0.35);
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateZ(0);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
     .crystal-panel:hover {
-      border-color: rgba(245, 158, 11, 0.40);
+      border-color: rgba(245, 158, 11, 0.38);
       box-shadow: 
-        0 35px 70px -15px rgba(0, 0, 0, 0.90),
-        0 0 30px -8px rgba(245, 158, 11, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.28);
+        0 25px 50px -10px rgba(0, 0, 0, 0.85),
+        0 0 25px -8px rgba(245, 158, 11, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22);
     }
     .crystal-panel-highlight {
       position: relative;
-      background: linear-gradient(170deg, rgba(41, 37, 36, 0.88) 0%, rgba(24, 21, 19, 0.96) 100%);
-      backdrop-filter: blur(32px) saturate(200%);
-      -webkit-backdrop-filter: blur(32px) saturate(200%);
-      border: 1.5px solid rgba(245, 158, 11, 0.50);
+      background: linear-gradient(170deg, rgba(38, 34, 32, 0.90) 0%, rgba(22, 19, 18, 0.98) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1.5px solid rgba(245, 158, 11, 0.45);
       box-shadow: 
-        0 35px 70px -10px rgba(0, 0, 0, 0.85),
-        0 0 50px -10px rgba(245, 158, 11, 0.35),
-        inset 0 1.5px 0 rgba(254, 240, 138, 0.40),
+        0 25px 60px -10px rgba(0, 0, 0, 0.85),
+        0 0 40px -10px rgba(245, 158, 11, 0.30),
+        inset 0 1.5px 0 rgba(254, 240, 138, 0.35),
         inset 0 -1.5px 0 rgba(0, 0, 0, 0.40);
+      transform: translateZ(0);
     }
 
     /* ── ThreeUI Liquid Glass Buttons (Specular Rim & Dispersion) ─ */
@@ -77,7 +89,8 @@
         inset 0 -1.5px 1px rgba(0, 0, 0, 0.30),
         inset 1px 0 0.5px rgba(254, 240, 138, 0.40),
         inset -1px 0 0.5px rgba(217, 119, 6, 0.40);
-      transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.24s ease;
+      transform: translateZ(0);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
     }
     /* Upper curved optical lens sheen */
     .apple-crystal-btn::before {
@@ -128,15 +141,16 @@
       background: 
         radial-gradient(110px circle at var(--pointer-x, 50%) var(--pointer-y, 50%), rgba(255, 255, 255, 0.16) 0%, transparent 70%),
         rgba(28, 25, 23, 0.65);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.14);
       border-radius: 14px;
       box-shadow: 
         0 10px 24px -8px rgba(0, 0, 0, 0.7),
         inset 0 1px 0 rgba(255, 255, 255, 0.25),
         inset 0 -1px 0 rgba(0, 0, 0, 0.3);
-      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateZ(0);
+      transition: all 0.2s ease;
     }
     .apple-secondary-btn:hover {
       background: 
@@ -156,23 +170,24 @@
 
     /* ── Floating Liquid Glass Top Dock (ThreeUI Inspired) ────── */
     .liquid-dock-rail {
-      background: linear-gradient(160deg, rgba(38, 34, 32, 0.78) 0%, rgba(20, 18, 17, 0.90) 100%);
-      backdrop-filter: blur(30px) saturate(190%);
-      -webkit-backdrop-filter: blur(30px) saturate(190%);
+      background: rgba(30, 27, 25, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(245, 158, 11, 0.25);
       box-shadow:
-        0 24px 60px -15px rgba(0, 0, 0, 0.88),
-        0 0 35px -8px rgba(217, 119, 6, 0.18),
-        inset 0 1px 0 rgba(255, 255, 255, 0.38),
+        0 20px 50px -15px rgba(0, 0, 0, 0.90),
+        0 0 30px -8px rgba(217, 119, 6, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.32),
         inset 0 -1px 0 rgba(0, 0, 0, 0.4);
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateZ(0);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
     .liquid-dock-rail:hover {
       border-color: rgba(245, 158, 11, 0.40);
       box-shadow:
-        0 30px 70px -15px rgba(0, 0, 0, 0.92),
-        0 0 45px -8px rgba(217, 119, 6, 0.28),
-        inset 0 1px 0 rgba(255, 255, 255, 0.50);
+        0 25px 60px -15px rgba(0, 0, 0, 0.92),
+        0 0 40px -8px rgba(217, 119, 6, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.45);
     }
     .liquid-dock-item {
       position: relative;
@@ -186,14 +201,14 @@
       color: rgba(255, 255, 255, 0.72);
       text-decoration: none;
       border: 1px solid transparent;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.18s ease;
     }
     .liquid-dock-item:hover {
       color: #ffffff;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.03) 100%);
-      border-color: rgba(255, 255, 255, 0.22);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.42), 0 6px 14px -6px rgba(0, 0, 0, 0.7);
-      transform: translateY(-1.5px) scale(1.05);
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.18);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      transform: translateY(-1px) scale(1.04);
     }
 
     .crystal-gold-text {
@@ -203,7 +218,7 @@
     }
     .crystal-pill {
       background: rgba(41, 37, 36, 0.65);
-      backdrop-filter: blur(16px);
+      backdrop-filter: blur(12px);
       border: 1px solid rgba(245, 158, 11, 0.25);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
     }
@@ -213,6 +228,9 @@
   </style>
 </head>
 <body class="min-h-screen antialiased selection:bg-amber-600 selection:text-white">
+
+  <!-- Fixed background glow plane: decoupled from scroll for 120 FPS hardware acceleration -->
+  <div class="bg-glow-layer" aria-hidden="true"></div>
 
   <!-- Top Announcement Promo Bar (50% Off Launch) -->
   <div class="bg-gradient-to-r from-stone-950 via-amber-950/80 to-stone-950 border-b border-amber-500/20 py-2.5 px-4 text-center text-xs text-amber-200/90 flex items-center justify-center gap-2 relative z-50">
@@ -1379,30 +1397,20 @@
       }
     }
 
-    // ThreeUI Liquid Glass Pointer Tracking & Proximity Engine
+    // Lightweight per-button mouse tracking (Zero CPU overhead during scroll)
     (function initLiquidGlassOptics() {
       const precisionQuery = window.matchMedia('(hover:hover) and (pointer:fine)');
       if (!precisionQuery.matches) return;
 
-      document.addEventListener('pointermove', (e) => {
-        // Track specular highlight across all liquid glass buttons and dock items
-        const interactiveElements = document.querySelectorAll('.apple-crystal-btn, .apple-secondary-btn, .liquid-dock-rail, .liquid-dock-item');
-        interactiveElements.forEach((el) => {
-          const rect = el.getBoundingClientRect();
-          // Check if cursor is near or inside element
-          if (
-            e.clientX >= rect.left - 50 &&
-            e.clientX <= rect.right + 50 &&
-            e.clientY >= rect.top - 50 &&
-            e.clientY <= rect.bottom + 50
-          ) {
-            const x = Math.round(((e.clientX - rect.left) / rect.width) * 100);
-            const y = Math.round(((e.clientY - rect.top) / rect.height) * 100);
-            el.style.setProperty('--pointer-x', `${x}%`);
-            el.style.setProperty('--pointer-y', `${y}%`);
-          }
-        });
-      }, { passive: true });
+      document.querySelectorAll('.apple-crystal-btn, .apple-secondary-btn').forEach((btn) => {
+        btn.addEventListener('mousemove', (e) => {
+          const rect = btn.getBoundingClientRect();
+          const x = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+          const y = Math.round(((e.clientY - rect.top) / rect.height) * 100);
+          btn.style.setProperty('--pointer-x', `${x}%`);
+          btn.style.setProperty('--pointer-y', `${y}%`);
+        }, { passive: true });
+      });
     })();
   </script>
 </body>
