@@ -10,7 +10,7 @@ from urllib.parse import urlparse, urljoin
 import requests
 from bs4 import BeautifulSoup
 
-USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 AutoSEO-Bot/1.0"
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
 
 def audit_website(url: str) -> dict:
     if not url.startswith(("http://", "https://")):
@@ -141,14 +141,14 @@ def audit_website(url: str) -> dict:
     # Check if AutoSEO dynamic image alt injector is present in HTML
     has_autoseo_alt_injector = "AutoSEO Pro Dynamic Image Alt" in html or ("querySelectorAll" in html and "alt" in html and "AutoSEO" in html)
 
-    if has_autoseo_alt_injector:
-        results["passed_checks"].append("AutoSEO Pro Image Optimizer active: 100% missing Alt-tags dynamically protected.")
-    elif len(missing_alt) > 0:
+    if len(missing_alt) > 0:
         penalty = min(15, len(missing_alt) * 3)
         results["score"] -= penalty
         results["critical_issues"].append(
-            f"Image SEO Missing: {len(missing_alt)} of {total_images} images are missing descriptive Alt-tags. Google Image search cannot index them."
+            f"Image SEO Missing: {len(missing_alt)} of {total_images} images on this page are missing descriptive Alt-tags."
         )
+    elif has_autoseo_alt_injector:
+        results["passed_checks"].append("AutoSEO Pro Image Optimizer active: Alt-tags dynamically protected.")
     elif total_images > 0:
         results["passed_checks"].append(f"All {total_images} images contain Alt-attributes.")
 
@@ -179,6 +179,93 @@ def audit_website(url: str) -> dict:
             results["warnings"].append("XML Sitemap not found at standard /sitemap.xml location.")
     except Exception:
         results["warnings"].append("Could not verify standard XML Sitemap.")
+
+    # 11. Deep E-Commerce Product Catalog Scan (Shopify & Woo)
+    is_product_page = "/products/" in parsed.path
+    if is_product_page and desc_text and len(desc_text) < 70:
+        results["score"] -= 20
+        results["critical_issues"].append(
+            f"Thin Product Description: Page description is only {len(desc_text)} characters ('{desc_text[:40]}...'). Google penalizes thin product pages lacking comprehensive buyer information."
+        )
+
+    # If domain has /products.json (Shopify catalog), audit product catalog for thin content
+    try:
+        clean_origin = f"{parsed.scheme}://{domain}"
+        cat_url = f"{clean_origin}/products.json?limit=25"
+        cat_res = requests.get(cat_url, headers={"User-Agent": USER_AGENT}, timeout=5, verify=False)
+        if cat_res.status_code == 200:
+            catalog_products = cat_res.json().get("products", [])
+            if catalog_products:
+                thin_products = []
+                truncated_titles = []
+                missing_catalog_alts = 0
+                total_catalog_imgs = 0
+                analyzed_products = []
+
+                for p in catalog_products:
+                    p_title = p.get("title", "")
+                    p_body = p.get("body_html", "") or ""
+                    clean_body = re.sub(r'<[^<]+?>', '', p_body).strip()
+                    p_imgs = p.get("images", [])
+                    p_missing_alts = sum(1 for img in p_imgs if not img.get("alt"))
+                    total_catalog_imgs += len(p_imgs)
+                    missing_catalog_alts += p_missing_alts
+
+                    p_issues = []
+                    # Thin description check (less than 100 characters is incomplete / adhi-adhuri)
+                    if len(clean_body) < 100:
+                        thin_products.append((p_title, len(clean_body)))
+                        p_issues.append(f"Thin / Incomplete Description ({len(clean_body)} chars)")
+                    
+                    # Title truncation check
+                    if len(p_title) > 70:
+                        truncated_titles.append((p_title, len(p_title)))
+                        p_issues.append(f"Title Truncated by Google ({len(p_title)} chars)")
+                    elif len(p_title) < 20:
+                        p_issues.append("Title too short")
+                    
+                    if p_missing_alts > 0:
+                        p_issues.append(f"{p_missing_alts} image(s) missing Alt tags")
+
+                    analyzed_products.append({
+                        "id": p.get("id"),
+                        "title": p_title,
+                        "handle": p.get("handle"),
+                        "clean_desc": clean_body[:90] + ("..." if len(clean_body) > 90 else ""),
+                        "desc_len": len(clean_body),
+                        "missing_alts": p_missing_alts,
+                        "issues": p_issues,
+                        "has_issues": len(p_issues) > 0
+                    })
+
+                results["details"]["products_catalog"] = analyzed_products
+                results["details"]["catalog_scanned_count"] = len(analyzed_products)
+
+                # Penalties for Catalog Defects
+                if thin_products:
+                    penalty = min(25, len(thin_products) * 10)
+                    results["score"] -= penalty
+                    sample_name = thin_products[0][0]
+                    sample_len = thin_products[0][1]
+                    results["critical_issues"].append(
+                        f"Thin Product Descriptions: Found {len(thin_products)} product(s) with incomplete/thin descriptions (e.g. '{sample_name[:38]}...' has only {sample_len} chars). Google Panda algorithm penalizes thin product pages!"
+                    )
+
+                if missing_catalog_alts > 0:
+                    penalty = min(20, missing_catalog_alts * 2)
+                    results["score"] -= penalty
+                    results["critical_issues"].append(
+                        f"Product Catalog Image SEO: {missing_catalog_alts} of {total_catalog_imgs} product images are missing descriptive Alt-tags. Google Images cannot index these products."
+                    )
+
+                if truncated_titles:
+                    penalty = min(15, len(truncated_titles) * 3)
+                    results["score"] -= penalty
+                    results["warnings"].append(
+                        f"Product Titles Exceeding Display Limit: {len(truncated_titles)} products have titles over 70 characters that will be cut off with '...' in Google search."
+                    )
+    except Exception:
+        pass
 
     # Clamp score between 10 and 100
     results["score"] = max(15, min(100, results["score"]))
