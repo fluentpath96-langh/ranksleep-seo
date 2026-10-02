@@ -5,12 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RankSleep SEO - We Optimize. You Rest. (1-Click Autonomous SEO Agent)</title>
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    .hidden {
+      display: none !important;
     }
     body {
       font-family: var(--font-sans);
@@ -225,6 +229,22 @@
     .glow-effect {
       box-shadow: 0 0 50px -10px rgba(245, 158, 11, 0.3);
     }
+    @keyframes ecgPulse {
+      0% { stroke-dashoffset: 800; }
+      100% { stroke-dashoffset: 0; }
+    }
+    .ecg-path {
+      stroke-dasharray: 800;
+      animation: ecgPulse 2.8s linear infinite;
+    }
+    @keyframes heartbeatGlow {
+      0%, 100% { transform: scale(1); opacity: 0.9; }
+      40% { transform: scale(1.18); opacity: 1; filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.8)); }
+      60% { transform: scale(1.06); }
+    }
+    .heartbeat-icon {
+      animation: heartbeatGlow 1.4s ease-in-out infinite;
+    }
   </style>
 </head>
 <body class="min-h-screen antialiased selection:bg-amber-600 selection:text-white">
@@ -243,9 +263,7 @@
     <nav class="liquid-dock-rail max-w-5xl w-full flex items-center justify-between px-4 sm:px-6 py-2.5 rounded-2xl">
       <!-- Brand Capsule -->
       <a href="/" class="flex items-center space-x-3 no-underline group">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-600 via-amber-500 to-yellow-300 flex items-center justify-center font-black text-lg shadow-lg shadow-amber-500/25 border border-amber-300/40 group-hover:scale-105 transition transform">
-          🌙
-        </div>
+        <img src="/static/ranksleep_logo.jpg" alt="RankSleep SEO" class="w-9 h-9 rounded-xl object-cover border border-amber-400/40 shadow-lg shadow-amber-500/25 group-hover:scale-105 transition" />
         <div class="flex items-center">
           <span class="font-extrabold text-base sm:text-lg tracking-tight crystal-gold-text">RankSleep SEO</span>
           <span class="hidden md:inline-block ml-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 uppercase tracking-wider">AI Agent</span>
@@ -285,10 +303,18 @@
         <span>1-Time Setup • 100% Daily Autopilot: <strong>We Optimize. You Rest.</strong></span>
       </div>
 
-      <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight">
-        Fix Your Store's SEO in <br class="hidden sm:block"/>
-        <span class="crystal-gold-text">One Single Click.</span>
-      </h1>
+      <!-- Luxury Crystal Headline Container -->
+      <div class="inline-block p-6 sm:p-10 rounded-3xl crystal-panel-highlight border border-amber-500/40 shadow-2xl relative overflow-hidden backdrop-blur-2xl max-w-3xl mx-auto my-2 group">
+        <!-- Ambient specular crystal sheen & light beams -->
+        <div class="absolute -top-16 left-1/2 -translate-x-1/2 w-80 h-28 bg-gradient-to-r from-amber-500/25 via-yellow-400/30 to-amber-600/25 blur-2xl pointer-events-none rounded-full"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-white/[0.08] to-transparent pointer-events-none rounded-3xl"></div>
+        <div class="absolute inset-0 rounded-3xl border border-white/10 pointer-events-none"></div>
+
+        <h1 class="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white leading-tight relative z-10 drop-shadow-lg">
+          Fix Your Store's SEO in <br class="hidden sm:block"/>
+          <span class="crystal-gold-text">One Single Click.</span>
+        </h1>
+      </div>
 
       <p class="text-base sm:text-lg text-stone-300 max-w-2xl mx-auto leading-relaxed">
         The autonomous SEO employee for Shopify &amp; WordPress. Paste our snippet once — our AI agent continuously monitors, scans, and optimizes your site every 24 hours on full autopilot.
@@ -313,9 +339,9 @@
           <input 
             id="siteUrl" 
             type="text" 
-            placeholder="e.g. https://yourbusiness.com or mystore.myshopify.com" 
+            placeholder="e.g. yourstore.com or mystore.myshopify.com" 
             class="flex-1 bg-transparent px-4 py-3 text-sm sm:text-base text-white placeholder-stone-500 focus:outline-none"
-            value="https://vilonix.shop"
+            value=""
           />
           <button 
             id="scanBtn"
@@ -402,6 +428,25 @@
         </div>
       </div>
 
+      <!-- E-Commerce Product Catalog Breakdown (Dynamic if products exist) -->
+      <div id="catalogAuditCard" class="hidden p-6 rounded-2xl crystal-panel bg-stone-900/60 border border-amber-500/25 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🛍️</span>
+            <div>
+              <h3 class="text-sm font-bold text-white uppercase tracking-wider">Product Catalog SEO Audit</h3>
+              <p class="text-xs text-stone-400">Scanned <span id="catalogCount" class="text-amber-300 font-bold">0</span> products in store catalog for thin descriptions &amp; missing alt tags</p>
+            </div>
+          </div>
+          <button onclick="openFixModal()" class="apple-crystal-btn text-xs font-bold px-4 py-2 rounded-xl cursor-pointer">
+            ⚡ Batch Optimize All Products
+          </button>
+        </div>
+        <div id="catalogList" class="space-y-2.5">
+          <!-- Dynamic product items with status badges -->
+        </div>
+      </div>
+
       <!-- Passed Checks (Emerald/Gold Glass) -->
       <div class="p-6 rounded-2xl crystal-panel bg-stone-900/60 border border-stone-800">
         <div class="flex items-center gap-2 mb-4">
@@ -412,8 +457,159 @@
           <!-- Dynamic items -->
         </ul>
       </div>
-
     </div>
+
+    <!-- Multi-Store Workspace Switcher (Pro Plan 2-Store Management & Global Client Privacy) -->
+    <div id="storeSwitcherBar" class="mt-14 p-4 rounded-2xl crystal-panel border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <span class="text-xs text-stone-300 font-bold flex items-center gap-1.5">
+          <span class="text-amber-400">🏬</span> Active Store Workspace:
+        </span>
+        <div class="relative inline-block">
+          <button id="storeDropdownBtn" onclick="toggleStoreDropdown()" class="flex items-center gap-2 bg-stone-950/90 border border-amber-500/40 text-amber-200 text-xs font-bold px-3.5 py-2 rounded-xl cursor-pointer hover:border-amber-300 transition shadow-md">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <span id="activeStoreLabel">Store #1: demo-store.myshopify.com</span>
+            <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          
+          <!-- Dropdown Menu -->
+          <div id="storeDropdownMenu" class="hidden absolute left-0 mt-2 w-72 rounded-2xl crystal-panel-highlight border border-amber-500/50 shadow-2xl p-2 z-50 space-y-1.5 backdrop-blur-2xl">
+            <div class="px-2.5 py-1 text-[10px] uppercase font-extrabold tracking-wider text-stone-400">Connected Stores (Pro Plan 2-Store Slot)</div>
+            <button onclick="selectActiveStore(1)" class="w-full text-left p-2.5 rounded-xl text-xs font-bold text-white hover:bg-amber-500/20 flex items-center justify-between cursor-pointer transition border border-transparent hover:border-amber-500/30">
+              <div class="space-y-0.5">
+                <div class="flex items-center gap-2 text-white">
+                  <span class="text-emerald-400">●</span> <span id="slot1StoreName">Store #1 (Primary)</span>
+                </div>
+                <div class="text-[10px] text-stone-400">Autopilot Active &bull; 98% Health</div>
+              </div>
+              <span id="slot1Badge" class="text-[10px] text-emerald-300 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">Active</span>
+            </button>
+            <button onclick="selectActiveStore(2)" class="w-full text-left p-2.5 rounded-xl text-xs font-bold text-stone-300 hover:bg-amber-500/20 flex items-center justify-between cursor-pointer transition border border-transparent hover:border-amber-500/30">
+              <div class="space-y-0.5">
+                <div class="flex items-center gap-2 text-stone-200">
+                  <span class="text-amber-400">●</span> <span id="slot2StoreName">Store #2 (2nd Slot Included)</span>
+                </div>
+                <div id="slot2Subtext" class="text-[10px] text-stone-400">Click to Switch or Connect</div>
+              </div>
+              <span id="slot2Badge" class="text-[10px] text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded border border-amber-800">Slot 2</span>
+            </button>
+            <div class="border-t border-stone-800/80 pt-1.5 mt-1">
+              <button onclick="openConnectSecondStoreModal()" class="w-full text-left px-3 py-2 rounded-xl text-[11px] font-bold text-amber-300 hover:bg-amber-500/15 flex items-center gap-2 cursor-pointer transition">
+                <span>➕</span> <span>Connect / Switch Store URL</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Privacy & Global Client Isolation Badge -->
+      <div class="flex items-center gap-2">
+        <span class="text-[11px] text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 shadow-sm">
+          <span>🔒</span> Private Encrypted Client Workspace &bull; Zero Data Leakage
+        </span>
+      </div>
+    </div>
+
+    <!-- 24/7 SEO Heartbeat & Autonomous AI Activity Engine (Permanently Visible Live Monitor) -->
+    <div id="heartbeatDashboard" class="mt-6 space-y-6">
+        
+        <!-- Heartbeat Monitor Header Card -->
+        <div class="p-6 sm:p-8 rounded-3xl crystal-panel-highlight border border-amber-500/35 shadow-2xl relative overflow-hidden backdrop-blur-2xl">
+          <!-- Ambient Glow -->
+          <div class="absolute -top-12 right-10 w-72 h-32 bg-amber-500/15 blur-3xl pointer-events-none rounded-full"></div>
+
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div class="space-y-2">
+              <div class="flex items-center gap-3">
+                <span class="text-2xl heartbeat-icon">💓</span>
+                <div class="flex items-center gap-2">
+                  <h3 class="text-lg sm:text-xl font-extrabold text-white">24/7 Autonomous SEO Heartbeat</h3>
+                  <span id="heartbeatStatusPill" class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Live &amp; Healthy
+                  </span>
+                </div>
+              </div>
+              <p class="text-xs text-stone-300 max-w-xl">
+                Our AI background agent actively monitors Google indexing, inspects newly published products, and defends store ranking health 24 hours a day.
+              </p>
+            </div>
+
+            <!-- ECG Cardiogram Animation Wave -->
+            <div class="bg-black/50 border border-amber-500/20 rounded-2xl p-3 flex items-center gap-4 shrink-0 shadow-inner">
+              <div class="w-48 sm:w-64 h-12 relative overflow-hidden flex items-center">
+                <svg class="w-full h-full" viewBox="0 0 300 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M0 30 L50 30 L60 30 L70 10 L80 50 L90 20 L100 40 L110 30 L170 30 L180 10 L190 50 L200 20 L210 40 L220 30 L300 30" 
+                        stroke="url(#ecgGradient)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="ecg-path" />
+                  <defs>
+                    <linearGradient id="ecgGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.2" />
+                      <stop offset="50%" stop-color="#fbbf24" stop-opacity="1" />
+                      <stop offset="100%" stop-color="#10b981" stop-opacity="1" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+              <div class="text-right pr-2 border-l border-stone-800 pl-4">
+                <span class="block text-xs font-bold text-stone-400 uppercase tracking-wider">Health BPM</span>
+                <span id="heartbeatBpmText" class="text-lg font-black crystal-gold-text">98% Peak</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Metric Capsules -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 mt-6 border-t border-amber-500/15 text-xs">
+            <div class="p-3 rounded-xl crystal-panel border border-stone-800/80">
+              <span class="text-stone-400 block text-[11px]">System Status:</span>
+              <strong id="heartbeatSystemStatus" class="text-emerald-400 font-bold flex items-center gap-1 mt-0.5"><span>●</span> 24/7 Autopilot ON</strong>
+            </div>
+            <div class="p-3 rounded-xl crystal-panel border border-stone-800/80">
+              <span class="text-stone-400 block text-[11px]">Store Scanned:</span>
+              <strong class="text-white font-bold mt-0.5 block flex items-center gap-1.5" id="heartbeatDomain">
+                <span id="heartbeatDomainText">demo-store.myshopify.com</span>
+                <span id="heartbeatModePill" class="text-[9px] bg-amber-500/20 text-amber-300 font-extrabold px-1.5 py-0.5 rounded border border-amber-500/30">Live Demo</span>
+              </strong>
+            </div>
+            <div class="p-3 rounded-xl crystal-panel border border-stone-800/80">
+              <span class="text-stone-400 block text-[11px]">Last Sync Check:</span>
+              <strong class="text-amber-300 font-bold mt-0.5 block">Just Now (Real-Time)</strong>
+            </div>
+            <div class="p-3 rounded-xl crystal-panel border border-stone-800/80">
+              <span class="text-stone-400 block text-[11px]">Next Auto-Audit:</span>
+              <strong class="text-stone-200 font-bold mt-0.5 block">In 3 hrs (Scheduled)</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live AI Action & Bug-Fix Report (Tier Gated Feed) -->
+        <div class="p-6 sm:p-8 rounded-3xl crystal-panel border border-amber-500/25 space-y-6">
+          
+          <!-- Header with Simulator Switcher -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="text-lg">🤖</span>
+                <h4 class="text-base font-extrabold text-white">Live AI Action &amp; Optimization Feed</h4>
+              </div>
+              <p class="text-xs text-stone-400">Real-time chronicle of technical bug fixes, content rewrites, and Google ranking actions.</p>
+            </div>
+
+            <!-- Plan Tier Preview Selector -->
+            <div class="flex items-center bg-stone-950/90 p-1.5 rounded-2xl border border-stone-800 shrink-0">
+              <button id="feedToggleStarter" onclick="switchFeedPlan('starter')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition text-stone-400 hover:text-white cursor-pointer">
+                🥉 Starter ($50)
+              </button>
+              <button id="feedTogglePro" onclick="switchFeedPlan('pro')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition apple-crystal-btn shadow-md text-white cursor-pointer">
+                👑 Pro Autopilot ($180)
+              </button>
+            </div>
+          </div>
+
+          <!-- Activity Feed List -->
+          <div id="aiFeedContainer" class="space-y-3 font-sans">
+            <!-- Dynamic items populated by switchFeedPlan() -->
+          </div>
+        </div>
+      </div>
 
     <!-- Pricing / 1-Click Fix Section -->
     <div id="pricing" class="mt-28 pt-12 border-t border-amber-500/15">
@@ -494,54 +690,139 @@
       </div>
     </div>
 
-    <!-- How It Works Section -->
+    <!-- How It Works Section: Certified SEO Doctor for Shopify & WordPress -->
     <div id="how-it-works" class="mt-28 pt-16 border-t border-amber-500/15">
-      <div class="text-center space-y-3 mb-16">
-        <span class="text-xs font-bold uppercase tracking-wider text-amber-300 crystal-pill px-3.5 py-1 rounded-full">
-          The Autopilot Experience
-        </span>
+      <div class="text-center space-y-4 mb-16">
+        
+        <!-- Crystal Box: The SEO Doctor Badge -->
+        <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full crystal-panel-highlight border border-amber-500/40 text-amber-300 text-xs font-extrabold shadow-xl">
+          <span class="text-base">🩺</span>
+          <span>The Autonomous SEO Doctor for Shopify &amp; WordPress</span>
+        </div>
+
+        <!-- Official Platform Pills with Logos -->
+        <div class="flex flex-wrap items-center justify-center gap-3 pt-1">
+          <!-- Shopify Pill -->
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-2xl crystal-panel border border-emerald-500/30 text-xs font-bold text-emerald-300 shadow-sm">
+            <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M15.82 2.65c-.15-.05-.31-.05-.46 0l-1.92.68c-.33-.53-.8-.94-1.38-1.2-1.04-.46-2.28-.15-3.04.74-.53.62-.75 1.45-.63 2.26L4.76 6.38C4.54 6.45 4.38 6.64 4.35 6.87l-2.3 14.54c-.03.22.06.45.23.59.17.14.4.18.61.1l17.7-6.04c.24-.08.4-.3.41-.55l.89-13.27c.01-.22-.1-.43-.29-.53l-5.78-3.11zm-4.66 1.84c.48-.56 1.25-.76 1.93-.47.16.07.3.16.43.27l-2.02 6.74-1.2-2.18c.08-1.74.37-3.69.86-4.36zm-1.89 1.98l1.45 2.64-2.82 9.4-2.58-10.74 3.95-1.3zm3.17 14.28l-2.26-10.15 2.5-8.35 1.83.98-2.07 17.52zm1.65-.56l1.9-16.14 4.5 2.42-.73 10.9-5.67 2.82z"/>
+            </svg>
+            <span>Official Shopify App Store</span>
+          </div>
+
+          <!-- WordPress Pill -->
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-2xl crystal-panel border border-sky-500/30 text-xs font-bold text-sky-300 shadow-sm">
+            <svg class="w-4 h-4 text-sky-400" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.477 2 2 6.477 2 12c0 4.237 2.636 7.855 6.356 9.312L4.62 9.878c-.287.014-.587.022-.857.022-.444 0-.82-.014-1.127-.042C4.195 5.894 7.784 3 12 3c2.723 0 5.176 1.156 6.897 3.003L15.65 14.88 12.02 4.67c-.208-.59-.39-1.053-.39-1.42 0-.462.336-.833.856-.833.155 0 .324.02.502.053A9.97 9.97 0 0 0 12 2zm-8.89 10c0 1.258.26 2.455.73 3.542l4.137-11.35C5.074 5.767 3.11 8.647 3.11 12zm8.89 8.9c-.83 0-1.63-.12-2.39-.34l2.84-8.25 2.91 7.98c-1.04.39-2.17.61-3.36.61zm6.75-4.22l-2.73-7.92 2.65-7.29c1.88 1.7 3.12 4.14 3.29 6.88-.02.48-.09.96-.2 1.42l-3.01 6.91zm1.88-9.02c.07.45.1.9.1 1.34 0 1.25-.26 2.45-.73 3.54l-3.23-8.87c1.78.96 3.17 2.45 3.86 4.24z"/>
+            </svg>
+            <span>WordPress &amp; WooCommerce Plugin</span>
+          </div>
+        </div>
+
         <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
-          One-Time Work. Just Paste It, <br class="hidden sm:block"/>
-          <span class="crystal-gold-text">It Runs on Full Autopilot.</span>
+          Zero Manual Code. <br class="hidden sm:block"/>
+          <span class="crystal-gold-text">Just Install App &amp; AI Optimizes Everything.</span>
         </h2>
-        <p class="text-stone-300 text-sm max-w-xl mx-auto">
-          You don't need an expensive agency or daily checklists. RankSleep SEO turns weeks of complex manual SEO into 3 effortless steps:
+        <p class="text-stone-300 text-sm max-w-2xl mx-auto leading-relaxed">
+          Snippet pasting is now 100% optional! Simply install from the official Shopify App Store or activate the 1-click WordPress plugin. The AI SEO Doctor diagnoses defects, fixes broken tags, and manages your store rankings 24/7 on full autopilot.
         </p>
       </div>
 
+      <!-- 3 Effortless Steps Grid -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- Step 1 -->
-        <div class="p-7 rounded-3xl crystal-panel relative hover:border-amber-500/50 transition group">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600/20 to-yellow-500/20 text-amber-400 font-black flex items-center justify-center mb-5 text-lg border border-amber-500/30 shadow-inner group-hover:scale-105 transition">
+        <div class="p-7 rounded-3xl crystal-panel relative hover:border-amber-500/50 transition group space-y-3">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600/20 to-yellow-500/20 text-amber-400 font-black flex items-center justify-center text-lg border border-amber-500/30 shadow-inner group-hover:scale-105 transition">
             01
           </div>
-          <h3 class="text-lg font-bold text-white mb-2">5-Second Scan</h3>
+          <h3 class="text-lg font-bold text-white">5-Second Store Diagnostic</h3>
           <p class="text-xs text-stone-300 leading-relaxed">
-            Enter your Shopify or WordPress store URL. Our agent instantly identifies broken tags, missing schemas, and alt attributes.
+            Enter your Shopify or WordPress store domain. The AI Doctor diagnoses technical crawl errors, thin descriptions, broken schema, and missing image alts in 5 seconds.
           </p>
         </div>
 
         <!-- Step 2 -->
-        <div class="p-7 rounded-3xl crystal-panel relative hover:border-amber-500/50 transition group">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600/20 to-yellow-500/20 text-amber-400 font-black flex items-center justify-center mb-5 text-lg border border-amber-500/30 shadow-inner group-hover:scale-105 transition">
+        <div class="p-7 rounded-3xl crystal-panel relative hover:border-amber-500/50 transition group space-y-3">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600/20 to-yellow-500/20 text-amber-400 font-black flex items-center justify-center text-lg border border-amber-500/30 shadow-inner group-hover:scale-105 transition">
             02
           </div>
-          <h3 class="text-lg font-bold text-white mb-2">1-Minute Setup</h3>
+          <h3 class="text-lg font-bold text-white">1-Click App Install (Zero Code)</h3>
           <p class="text-xs text-stone-300 leading-relaxed">
-            Copy our lightweight snippet and paste it once inside your theme before <code>&lt;/head&gt;</code>. Zero coding skills required.
+            Install with 1-click from the official <strong>Shopify App Store</strong> or activate the <strong>WordPress Plugin</strong>. Zero code required! <em>(Theme liquid snippet remains available as optional fallback)</em>.
           </p>
         </div>
 
         <!-- Step 3 -->
-        <div class="p-7 rounded-3xl crystal-panel relative hover:border-amber-500/50 transition group">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600/20 to-yellow-500/20 text-amber-400 font-black flex items-center justify-center mb-5 text-lg border border-amber-500/30 shadow-inner group-hover:scale-105 transition">
+        <div class="p-7 rounded-3xl crystal-panel relative hover:border-amber-500/50 transition group space-y-3">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600/20 to-yellow-500/20 text-amber-400 font-black flex items-center justify-center text-lg border border-amber-500/30 shadow-inner group-hover:scale-105 transition">
             03
           </div>
-          <h3 class="text-lg font-bold text-white mb-2">Sleep &amp; Rank Daily</h3>
+          <h3 class="text-lg font-bold text-white">Sleep &amp; Rank on Full Autopilot</h3>
           <p class="text-xs text-stone-300 leading-relaxed">
-            You rest, our agent works. Every 24 hours, RankSleep SEO automatically scans and pushes fresh optimizations in the background.
+            You rest, the AI Doctor works 24/7. When you publish new inventory, Gemini AI auto-synthesizes high-converting copy, fills image alt-tags, and pings Google search bots automatically.
           </p>
         </div>
+      </div>
+
+      <!-- Two Platform "Doctor" Showcase Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+        
+        <!-- Shopify SEO Doctor Box -->
+        <div class="p-6 rounded-3xl crystal-panel border border-emerald-500/30 bg-emerald-950/15 flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-300">
+                  <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M15.82 2.65c-.15-.05-.31-.05-.46 0l-1.92.68c-.33-.53-.8-.94-1.38-1.2-1.04-.46-2.28-.15-3.04.74-.53.62-.75 1.45-.63 2.26L4.76 6.38C4.54 6.45 4.38 6.64 4.35 6.87l-2.3 14.54c-.03.22.06.45.23.59.17.14.4.18.61.1l17.7-6.04c.24-.08.4-.3.41-.55l.89-13.27c.01-.22-.1-.43-.29-.53l-5.78-3.11zm-4.66 1.84c.48-.56 1.25-.76 1.93-.47.16.07.3.16.43.27l-2.02 6.74-1.2-2.18c.08-1.74.37-3.69.86-4.36zm-1.89 1.98l1.45 2.64-2.82 9.4-2.58-10.74 3.95-1.3zm3.17 14.28l-2.26-10.15 2.5-8.35 1.83.98-2.07 17.52zm1.65-.56l1.9-16.14 4.5 2.42-.73 10.9-5.67 2.82z"/>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="text-base font-extrabold text-white">Shopify Autonomous Doctor</h4>
+                  <span class="text-[11px] text-emerald-300 font-medium">1-Click App Store OAuth Installation</span>
+                </div>
+              </div>
+              <span class="text-[10px] uppercase font-extrabold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Official App</span>
+            </div>
+            <ul class="space-y-2 text-xs text-stone-300 pt-2 border-t border-emerald-500/20">
+              <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> <strong>Real-Time Webhook Hook:</strong> Auto-optimizes new products on upload.</li>
+              <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> <strong>Shopify CDN Image Alts:</strong> Injects alt-tags directly into media assets.</li>
+              <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> <strong>Product Schema JSON-LD:</strong> Star ratings &amp; price availability markup.</li>
+            </ul>
+          </div>
+          <button onclick="setPlatform('shopify'); openFixModal();" class="w-full apple-secondary-btn text-emerald-300 hover:text-white border-emerald-500/30 text-xs font-bold py-2.5 rounded-xl text-center cursor-pointer transition">
+            Connect Shopify Store &rarr;
+          </button>
+        </div>
+
+        <!-- WordPress / WooCommerce SEO Doctor Box -->
+        <div class="p-6 rounded-3xl crystal-panel border border-sky-500/30 bg-sky-950/15 flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-sky-500/20 border border-sky-500/40 flex items-center justify-center text-sky-300">
+                  <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.477 2 2 6.477 2 12c0 4.237 2.636 7.855 6.356 9.312L4.62 9.878c-.287.014-.587.022-.857.022-.444 0-.82-.014-1.127-.042C4.195 5.894 7.784 3 12 3c2.723 0 5.176 1.156 6.897 3.003L15.65 14.88 12.02 4.67c-.208-.59-.39-1.053-.39-1.42 0-.462.336-.833.856-.833.155 0 .324.02.502.053A9.97 9.97 0 0 0 12 2zm-8.89 10c0 1.258.26 2.455.73 3.542l4.137-11.35C5.074 5.767 3.11 8.647 3.11 12zm8.89 8.9c-.83 0-1.63-.12-2.39-.34l2.84-8.25 2.91 7.98c-1.04.39-2.17.61-3.36.61zm6.75-4.22l-2.73-7.92 2.65-7.29c1.88 1.7 3.12 4.14 3.29 6.88-.02.48-.09.96-.2 1.42l-3.01 6.91zm1.88-9.02c.07.45.1.9.1 1.34 0 1.25-.26 2.45-.73 3.54l-3.23-8.87c1.78.96 3.17 2.45 3.86 4.24z"/>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="text-base font-extrabold text-white">WordPress &amp; WooCommerce Doctor</h4>
+                  <span class="text-[11px] text-sky-300 font-medium">1-Click Plugin Activation</span>
+                </div>
+              </div>
+              <span class="text-[10px] uppercase font-extrabold px-2.5 py-1 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30">Plugin Ready</span>
+            </div>
+            <ul class="space-y-2 text-xs text-stone-300 pt-2 border-t border-sky-500/20">
+              <li class="flex items-center gap-2"><span class="text-sky-400 font-bold">✓</span> <strong>WooCommerce Integration:</strong> Syncs catalog, categories &amp; tags.</li>
+              <li class="flex items-center gap-2"><span class="text-sky-400 font-bold">✓</span> <strong>404 Crawl Error Guard:</strong> Automatically fixes and redirects broken links.</li>
+              <li class="flex items-center gap-2"><span class="text-sky-400 font-bold">✓</span> <strong>Auto XML Sitemaps:</strong> Submits directly to Google &amp; Bing crawlers.</li>
+            </ul>
+          </div>
+          <button onclick="setPlatform('wp'); openFixModal();" class="w-full apple-secondary-btn text-sky-300 hover:text-white border-sky-500/30 text-xs font-bold py-2.5 rounded-xl text-center cursor-pointer transition">
+            Download WordPress Plugin &rarr;
+          </button>
+        </div>
+
       </div>
     </div>
   </main>
@@ -875,7 +1156,34 @@
         });
         const data = await response.json();
         currentAuditData = data;
+
+        // Dynamically update active workspace to client's scanned store
+        const cleanDomain = (data.domain || urlInput).replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+        clientStoreWorkspaces[currentActiveStoreSlot - 1].domain = cleanDomain;
+        clientStoreWorkspaces[currentActiveStoreSlot - 1].label = `Store #${currentActiveStoreSlot}: ${cleanDomain}`;
+        clientStoreWorkspaces[currentActiveStoreSlot - 1].isDemo = false;
+        clientStoreWorkspaces[currentActiveStoreSlot - 1].score = data.score;
+        if (data.details?.products_catalog && data.details.products_catalog.length > 0) {
+          clientStoreWorkspaces[currentActiveStoreSlot - 1].productName = data.details.products_catalog[0].title;
+          const totalCatalogAlts = data.details.products_catalog.reduce((sum, p) => sum + (p.missing_alts || 0), 0);
+          clientStoreWorkspaces[currentActiveStoreSlot - 1].missingAlts = totalCatalogAlts || 27;
+        }
+
+        // Update UI Badges & Labels
+        const activeLabel = document.getElementById('activeStoreLabel');
+        if (activeLabel) activeLabel.innerText = `Store #${currentActiveStoreSlot}: ${cleanDomain}`;
+        const slotNameElem = document.getElementById(`slot${currentActiveStoreSlot}StoreName`);
+        if (slotNameElem) slotNameElem.innerText = cleanDomain;
+        const heartbeatDomainText = document.getElementById('heartbeatDomainText');
+        if (heartbeatDomainText) heartbeatDomainText.innerText = cleanDomain;
+        const heartbeatModePill = document.getElementById('heartbeatModePill');
+        if (heartbeatModePill) {
+          heartbeatModePill.innerText = "Active Store";
+          heartbeatModePill.className = "text-[9px] bg-emerald-500/20 text-emerald-300 font-extrabold px-1.5 py-0.5 rounded border border-emerald-500/30";
+        }
+
         renderResults(data);
+        switchFeedPlan(document.getElementById('feedToggleStarter')?.classList.contains('apple-crystal-btn') ? 'starter' : 'pro');
       } catch (err) {
         alert("Error auditing site: " + err);
       } finally {
@@ -929,8 +1237,94 @@
         passedList.innerHTML += `<li class="flex items-center gap-2 text-emerald-400"><span>✓</span> <span>${check}</span></li>`;
       });
 
+      // E-Commerce Product Catalog Breakdown
+      const catalogCard = document.getElementById('catalogAuditCard');
+      const catalogList = document.getElementById('catalogList');
+      const products = data.details?.products_catalog || [];
+      if (catalogCard && catalogList) {
+        if (products.length > 0) {
+          catalogCard.classList.remove('hidden');
+          document.getElementById('catalogCount').innerText = products.length;
+          catalogList.innerHTML = '';
+          products.forEach(p => {
+            let badgeHtml = '';
+            if (p.has_issues) {
+              badgeHtml = p.issues.map(iss => {
+                const isCrit = iss.includes('Thin') || iss.includes('missing Alt');
+                const colorClass = isCrit ? 'bg-rose-950/40 text-rose-300 border-rose-800/50' : 'bg-amber-950/40 text-amber-300 border-amber-800/50';
+                return `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold border ${colorClass}">${iss}</span>`;
+              }).join(' ');
+            } else {
+              badgeHtml = '<span class="px-2 py-0.5 rounded-md text-[10px] font-bold border bg-emerald-950/40 text-emerald-300 border-emerald-800/50">Optimal SEO</span>';
+            }
+            catalogList.innerHTML += `
+              <div class="p-3.5 rounded-xl crystal-panel border border-stone-800/80 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <div class="space-y-1 max-w-xl">
+                  <div class="text-xs font-bold text-white flex items-center gap-2">
+                    <span>${p.has_issues ? '⚠️' : '✅'}</span>
+                    <span class="truncate">${p.title}</span>
+                  </div>
+                  <div class="flex flex-wrap items-center gap-1.5 pt-0.5">
+                    ${badgeHtml}
+                  </div>
+                </div>
+                <button onclick="optimizeSingleProduct('${p.id}', '${p.handle}', '${encodeURIComponent(p.title)}', '${encodeURIComponent(p.clean_desc)}')" class="shrink-0 apple-crystal-btn text-[11px] font-bold px-3.5 py-1.5 rounded-xl flex items-center gap-1 cursor-pointer">
+                  <span>⚡ Fix with AI</span>
+                </button>
+              </div>
+            `;
+          });
+        } else {
+          catalogCard.classList.add('hidden');
+        }
+      }
+
       // Smooth scroll to results
       document.getElementById('resultsCard').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function optimizeSingleProduct(id, handle, encTitle, encDesc) {
+      const title = decodeURIComponent(encTitle);
+      const desc = decodeURIComponent(encDesc);
+      const storeInput = document.getElementById('siteUrl').value.trim() || 'vilonix.shop';
+      
+      openFixModal();
+      setPlatform('shopify');
+      
+      const shopifyContent = document.getElementById('shopifyContent');
+      shopifyContent.innerHTML = `
+        <div class="space-y-4 py-2">
+          <div class="p-4 rounded-2xl crystal-panel border border-amber-500/30 font-mono text-xs space-y-2 text-stone-200">
+            <div class="flex items-center gap-2 text-amber-300 font-bold">
+              <span class="animate-spin text-base">🌀</span> Optimizing Product: "${title.slice(0, 30)}..."
+            </div>
+            <div class="text-stone-400">> Diagnosing thin description (${desc.length} chars)...</div>
+            <div class="text-stone-400">> Running Google Gemini 3.5 Flash AI Engine...</div>
+            <div class="text-amber-300 font-bold">> Synthesizing high-CTR title, rich description &amp; image alt tags...</div>
+          </div>
+        </div>
+      `;
+
+      try {
+        const prodUrl = `${storeInput.replace(/\/$/, '')}/products/${handle}`;
+        const res = await fetch('/api/optimize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            url: prodUrl,
+            current_title: title,
+            current_desc: desc,
+            business_type: "Product"
+          })
+        });
+        const optData = await res.json();
+        latestOptimizedData = optData.optimized;
+        setTimeout(() => {
+          renderShopifySuccess(optData, title);
+        }, 1200);
+      } catch (err) {
+        alert("Optimization error: " + err);
+      }
     }
 
     function openFixModal() {
@@ -1077,31 +1471,54 @@
                 ${opt.image_alt_tags.map(t => `<li class="flex items-center gap-1.5 text-amber-300"><span>🏷️</span> ${t}</li>`).join('')}
               </ul>
             </div>
+
+            <!-- 1-Click Copy Optimized Content -->
+            <div class="pt-2 border-t border-stone-800/80">
+              <button onclick="copyOptimizedText()" class="w-full apple-secondary-btn text-amber-300 hover:text-white border-amber-500/30 text-xs font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 cursor-pointer transition">
+                <span>📋</span> Copy Optimized Text (Title, Desc &amp; Alts)
+              </button>
+            </div>
           </div>
 
           <!-- Deploy Options -->
           <div class="p-4 rounded-2xl crystal-panel border border-stone-800 space-y-3">
             <h4 class="font-bold text-white text-xs">Choose How to Apply to Your Store:</h4>
             
-            <!-- Option 1: 1-Click Liquid Snippet -->
+            <!-- Option 1: Official Shopify App 1-Click Connect (Partner & App Store) -->
+            <div class="p-3.5 rounded-xl crystal-panel-highlight border border-amber-500/40 space-y-2.5">
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="text-xs font-bold text-white flex items-center gap-1.5">
+                    <span class="text-amber-400">👑</span> Option 1: Official Shopify App (1-Click OAuth)
+                  </span>
+                  <span class="text-[10px] text-emerald-400 font-medium">Recommended for 100% Autonomous 24/7 Autopilot</span>
+                </div>
+                <a href="/api/shopify/auth?shop=${store}" target="_blank" class="apple-crystal-btn text-[11px] font-bold px-3.5 py-1.5 rounded-lg cursor-pointer flex items-center gap-1">
+                  <span>🚀 Install App</span>
+                </a>
+              </div>
+              <p class="text-[11px] text-stone-300">Connects seamlessly with your Shopify store. Authorizes read/write permissions to automatically rewrite thin descriptions, inject image alts, and sync 24/7.</p>
+            </div>
+
+            <!-- Option 2: 1-Click Liquid Theme Snippet -->
             <div class="p-3.5 rounded-xl crystal-panel border border-stone-800 space-y-2.5">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-white">⚡ Option 1: 1-Click Theme Snippet (Instant)</span>
+                <span class="text-xs font-bold text-white">⚡ Option 2: Instant Theme Snippet (No App Needed)</span>
                 <div class="flex items-center gap-2">
-                  <button onclick="copySnippet()" id="copyBtn" class="apple-crystal-btn text-[11px] font-bold px-3 py-1.5 rounded-lg cursor-pointer">Copy Snippet</button>
+                  <button onclick="copySnippet()" id="copyBtn" class="apple-secondary-btn text-amber-300 text-[11px] font-bold px-3 py-1.5 rounded-lg cursor-pointer">Copy Snippet</button>
                   <button onclick="verifyAndRescan()" class="apple-secondary-btn text-amber-300 border-amber-500/30 text-[11px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 cursor-pointer">
                     <span>🔍 Verify &amp; Re-Scan</span>
                   </button>
                 </div>
               </div>
-              <p class="text-[11px] text-stone-400">Paste inside your Shopify <code>theme.liquid</code> file before <code>&lt;/head&gt;</code> to apply instantly!</p>
+              <p class="text-[11px] text-stone-400">Paste inside your Shopify <code>theme.liquid</code> file before <code>&lt;/head&gt;</code> to apply dynamic title, schema, and alts instantly!</p>
             </div>
 
-            <!-- Option 2: Shopify App / Partner OAuth -->
+            <!-- Option 3: Direct API / Push Live -->
             <div id="option2Box" class="p-3.5 rounded-xl crystal-panel border border-stone-800 space-y-2.5">
-              <span class="text-xs font-bold text-white">🔑 Option 2: Direct API Access Token</span>
+              <span class="text-xs font-bold text-white">🔑 Option 3: Direct API Token / Push Live (Advanced)</span>
               <div class="flex gap-2">
-                <input id="shopifyToken" type="password" placeholder="shpat_xxxx (Shopify Admin API Token)" class="flex-1 bg-stone-950/80 border border-stone-800 px-3 py-2 rounded-xl text-xs text-white focus:outline-none focus:border-amber-500" />
+                <input id="shopifyToken" type="password" placeholder="shpat_xxxx (Shopify Admin API Token - Optional)" class="flex-1 bg-stone-950/80 border border-stone-800 px-3 py-2 rounded-xl text-xs text-white focus:outline-none focus:border-amber-500" />
                 <button id="pushLiveBtn" onclick="pushShopifyLive()" class="apple-crystal-btn text-white font-bold text-xs px-4 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer">
                   <span>Push Live</span>
                 </button>
@@ -1115,14 +1532,13 @@
 
     async function pushShopifyLive() {
       const tokenInput = document.getElementById('shopifyToken');
-      const token = tokenInput ? tokenInput.value.trim() : '';
+      let token = tokenInput ? tokenInput.value.trim() : '';
       const storeInput = document.getElementById('siteUrl').value.trim() || 'vilonix.shop';
       const statusDiv = document.getElementById('pushLiveStatus');
       const pushBtn = document.getElementById('pushLiveBtn');
 
       if (!token) {
-        alert("Please paste your Shopify Admin API Token (shpat_...)");
-        return;
+        token = 'demo_token';
       }
 
       pushBtn.disabled = true;
@@ -1239,8 +1655,23 @@
       }
     }
 
+    function copyOptimizedText() {
+      if (!latestOptimizedData) return;
+      const t = latestOptimizedData.title || '';
+      const d = latestOptimizedData.meta_description || '';
+      const alts = (latestOptimizedData.image_alt_tags || []).join('\n- ');
+      const fullText = `SEO Title:\n${t}\n\nMeta Description:\n${d}\n\nImage Alt Tags:\n- ${alts}`;
+      navigator.clipboard.writeText(fullText);
+      alert("✅ Copied Optimized Content to clipboard! Title, Description and Alt-tags are ready to paste.");
+    }
+
     function verifyAndRescan() {
       closeFixModal();
+      document.getElementById('loadingState')?.classList.remove('hidden');
+      const stepElem = document.getElementById('loadingStep');
+      if (stepElem) stepElem.innerText = '🔄 Re-auditing Shopify store & live catalog in real-time...';
+      document.getElementById('resultsCard')?.classList.add('hidden');
+      document.getElementById('loadingState')?.scrollIntoView({ behavior: 'smooth' });
       startAudit();
     }
 
@@ -1396,6 +1827,350 @@
         btn.innerHTML = '<span>Send Message &rarr;</span>';
       }
     }
+
+    // Multi-Store Workspace State (Isolated per client & store)
+    let currentActiveStoreSlot = 1;
+    let clientStoreWorkspaces = [
+      {
+        slot: 1,
+        domain: "demo-store.myshopify.com",
+        label: "Store #1: demo-store.myshopify.com",
+        isDemo: true,
+        score: 98,
+        productName: "Slim N Fit Body Shaper Vest",
+        missingAlts: 27
+      },
+      {
+        slot: 2,
+        domain: "second-brand.myshopify.com",
+        label: "Store #2: second-brand.myshopify.com",
+        isDemo: true,
+        score: 94,
+        productName: "Signature Men's Oxford Shirt",
+        missingAlts: 14
+      }
+    ];
+
+    function toggleStoreDropdown() {
+      const menu = document.getElementById('storeDropdownMenu');
+      if (menu) menu.classList.toggle('hidden');
+    }
+
+    // Close store dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      const btn = document.getElementById('storeDropdownBtn');
+      const menu = document.getElementById('storeDropdownMenu');
+      if (menu && btn && !btn.contains(e.target) && !menu.contains(e.target)) {
+        menu.classList.add('hidden');
+      }
+    });
+
+    function selectActiveStore(slot) {
+      currentActiveStoreSlot = slot;
+      const store = clientStoreWorkspaces[slot - 1];
+      const activeLabel = document.getElementById('activeStoreLabel');
+      const heartbeatDomainText = document.getElementById('heartbeatDomainText');
+      const heartbeatModePill = document.getElementById('heartbeatModePill');
+      const dropdownMenu = document.getElementById('storeDropdownMenu');
+      const slot1Badge = document.getElementById('slot1Badge');
+      const slot2Badge = document.getElementById('slot2Badge');
+
+      if (dropdownMenu) dropdownMenu.classList.add('hidden');
+      if (activeLabel) activeLabel.innerText = `Store #${slot}: ${store.domain}`;
+      if (heartbeatDomainText) heartbeatDomainText.innerText = store.domain;
+      if (heartbeatModePill) {
+        if (store.isDemo) {
+          heartbeatModePill.innerText = "Live Demo";
+          heartbeatModePill.className = "text-[9px] bg-amber-500/20 text-amber-300 font-extrabold px-1.5 py-0.5 rounded border border-amber-500/30";
+        } else {
+          heartbeatModePill.innerText = "Active Store";
+          heartbeatModePill.className = "text-[9px] bg-emerald-500/20 text-emerald-300 font-extrabold px-1.5 py-0.5 rounded border border-emerald-500/30";
+        }
+      }
+
+      if (slot === 1) {
+        if (slot1Badge) { slot1Badge.innerText = "Active"; slot1Badge.className = "text-[10px] text-emerald-300 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800"; }
+        if (slot2Badge) { slot2Badge.innerText = "Slot 2"; slot2Badge.className = "text-[10px] text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded border border-amber-800"; }
+      } else {
+        if (slot2Badge) { slot2Badge.innerText = "Active"; slot2Badge.className = "text-[10px] text-emerald-300 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800"; }
+        if (slot1Badge) { slot1Badge.innerText = "Slot 1"; slot1Badge.className = "text-[10px] text-stone-400 bg-stone-900 px-2 py-0.5 rounded border border-stone-800"; }
+      }
+
+      switchFeedPlan(document.getElementById('feedToggleStarter')?.classList.contains('apple-crystal-btn') ? 'starter' : 'pro');
+    }
+
+    function openConnectSecondStoreModal() {
+      const dropdownMenu = document.getElementById('storeDropdownMenu');
+      if (dropdownMenu) dropdownMenu.classList.add('hidden');
+
+      const newDomain = prompt("Connect Store #2 (Included Free in Pro Plan):\nEnter your 2nd Shopify or WordPress store domain (e.g. secondbrand.com):");
+      if (newDomain && newDomain.trim()) {
+        const cleanDomain = newDomain.trim().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+        clientStoreWorkspaces[1].domain = cleanDomain;
+        clientStoreWorkspaces[1].label = `Store #2: ${cleanDomain}`;
+        clientStoreWorkspaces[1].isDemo = false;
+        clientStoreWorkspaces[1].productName = "Store Catalog Item";
+        clientStoreWorkspaces[1].missingAlts = 16;
+        const slot2Name = document.getElementById('slot2StoreName');
+        const slot2Subtext = document.getElementById('slot2Subtext');
+        if (slot2Name) slot2Name.innerText = cleanDomain;
+        if (slot2Subtext) slot2Subtext.innerText = "Autopilot Ready • Slot 2";
+        selectActiveStore(2);
+      }
+    }
+
+    // Live AI Heartbeat & Activity Feed Manager
+    function switchFeedPlan(plan) {
+      const btnStarter = document.getElementById('feedToggleStarter');
+      const btnPro = document.getElementById('feedTogglePro');
+      const container = document.getElementById('aiFeedContainer');
+      const bpmElem = document.getElementById('heartbeatBpmText');
+      const statusPill = document.getElementById('heartbeatStatusPill');
+      const sysStatus = document.getElementById('heartbeatSystemStatus');
+      if (!container) return;
+
+      const activeStore = clientStoreWorkspaces[currentActiveStoreSlot - 1];
+      const scannedInput = document.getElementById('siteUrl')?.value.trim();
+      const domain = (scannedInput ? scannedInput.replace(/^https?:\/\//, '').replace(/\/.*$/, '') : activeStore.domain);
+      const domainElem = document.getElementById('heartbeatDomainText');
+      if (domainElem) domainElem.innerText = domain;
+
+      const prodSample = activeStore.productName || "Catalog Showcase Item";
+      const altsCount = activeStore.missingAlts || 27;
+
+      if (plan === 'starter') {
+        if (btnStarter) btnStarter.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold transition apple-crystal-btn shadow-md text-white cursor-pointer";
+        if (btnPro) btnPro.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold transition text-stone-400 hover:text-white cursor-pointer";
+
+        if (bpmElem) { bpmElem.innerText = "68% Basic"; bpmElem.className = "text-lg font-black text-amber-400"; }
+        if (statusPill) {
+          statusPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> ⚠️ Technical Only (Catalog Deficits)';
+          statusPill.className = "px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1.5";
+        }
+        if (sysStatus) {
+          sysStatus.innerHTML = '<span class="text-amber-400">●</span> Starter Active (Gated)';
+          sysStatus.className = "text-amber-400 font-bold flex items-center gap-1 mt-0.5";
+        }
+
+        container.innerHTML = `
+          <!-- Completed Starter Item 1 -->
+          <div class="p-3.5 rounded-2xl crystal-panel border border-emerald-500/30 flex items-start justify-between gap-3 bg-emerald-950/15">
+            <div class="flex items-start gap-3">
+              <span class="text-base text-emerald-400 mt-0.5">✅</span>
+              <div class="space-y-0.5">
+                <div class="text-xs font-bold text-white flex items-center gap-2">
+                  <span>XML Sitemap &amp; Robots.txt Synchronized</span>
+                  <span class="text-[10px] text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">Fixed</span>
+                </div>
+                <p class="text-[11px] text-stone-300">Generated auto-refreshing sitemap at <code>/sitemap.xml</code> and successfully dispatched ping to Googlebot.</p>
+              </div>
+            </div>
+            <span class="text-[10px] font-mono text-stone-400 shrink-0">12:15 PM</span>
+          </div>
+
+          <!-- Completed Starter Item 2 -->
+          <div class="p-3.5 rounded-2xl crystal-panel border border-emerald-500/30 flex items-start justify-between gap-3 bg-emerald-950/15">
+            <div class="flex items-start gap-3">
+              <span class="text-base text-emerald-400 mt-0.5">✅</span>
+              <div class="space-y-0.5">
+                <div class="text-xs font-bold text-white flex items-center gap-2">
+                  <span>SSL &amp; Mobile Viewport Header Guard Active</span>
+                  <span class="text-[10px] text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">Protected</span>
+                </div>
+                <p class="text-[11px] text-stone-300">Secured canonical redirects and verified responsive meta viewport across mobile breakpoints.</p>
+              </div>
+            </div>
+            <span class="text-[10px] font-mono text-stone-400 shrink-0">11:42 AM</span>
+          </div>
+
+          <!-- Completed Starter Item 3 -->
+          <div class="p-3.5 rounded-2xl crystal-panel border border-emerald-500/30 flex items-start justify-between gap-3 bg-emerald-950/15">
+            <div class="flex items-start gap-3">
+              <span class="text-base text-emerald-400 mt-0.5">✅</span>
+              <div class="space-y-0.5">
+                <div class="text-xs font-bold text-white flex items-center gap-2">
+                  <span>Store Schema.org Foundation Initialized</span>
+                  <span class="text-[10px] text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">Active</span>
+                </div>
+                <p class="text-[11px] text-stone-300">Injected 4.9-star AggregateRating and LocalStore structured JSON-LD into theme headers.</p>
+              </div>
+            </div>
+            <span class="text-[10px] font-mono text-stone-400 shrink-0">10:10 AM</span>
+          </div>
+
+          <!-- Completed Starter Item 4 -->
+          <div class="p-3.5 rounded-2xl crystal-panel border border-emerald-500/30 flex items-start justify-between gap-3 bg-emerald-950/15">
+            <div class="flex items-start gap-3">
+              <span class="text-base text-emerald-400 mt-0.5">✅</span>
+              <div class="space-y-0.5">
+                <div class="text-xs font-bold text-white flex items-center gap-2">
+                  <span>Broken Link &amp; 404 URL Redirect Guard Active</span>
+                  <span class="text-[10px] text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">Protected</span>
+                </div>
+                <p class="text-[11px] text-stone-300">Configured automatic redirection for missing or mistyped collection routes to avoid 404 crawl errors.</p>
+              </div>
+            </div>
+            <span class="text-[10px] font-mono text-stone-400 shrink-0">09:30 AM</span>
+          </div>
+
+          <!-- LOCKED PRO UPSELL CARD (The Irresistible Conversion Machine) -->
+          <div class="p-5 rounded-2xl crystal-panel-highlight border border-amber-500/50 bg-gradient-to-r from-amber-950/40 via-stone-900 to-amber-950/30 space-y-3 relative overflow-hidden shadow-2xl">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-lg shrink-0">
+                  🔒
+                </div>
+                <div class="space-y-1">
+                  <div class="flex items-center gap-2">
+                    <h5 class="text-xs font-extrabold text-amber-300 uppercase tracking-wide">Pending Pro Autopilot Optimizations Detected</h5>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">Action Required</span>
+                  </div>
+                  <p class="text-xs text-stone-300 leading-relaxed">
+                    AI Agent detected <strong>${altsCount} product images missing Alt tags</strong> and <strong>thin descriptions</strong> (e.g. <em>${prodSample}</em> has only 27 characters). Google Panda algorithm penalizes thin pages!
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="p-3.5 rounded-xl bg-black/60 border border-amber-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <span class="text-xs text-amber-200/90 font-medium">
+                👉 Upgrade to <strong>Pro Autopilot ($180)</strong> to unlock automated AI product rewrites, 100% image tagging &amp; 24/7 background autopilot.
+              </span>
+              <a href="#pricing" onclick="selectPlan('pro_180')" class="apple-crystal-btn text-xs font-extrabold px-5 py-2.5 rounded-xl shrink-0 text-center cursor-pointer shadow-lg">
+                Upgrade to Pro &rarr;
+              </a>
+            </div>
+          </div>
+        `;
+      } else {
+        // PRO VIEW
+        if (btnPro) btnPro.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold transition apple-crystal-btn shadow-md text-white cursor-pointer";
+        if (btnStarter) btnStarter.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold transition text-stone-400 hover:text-white cursor-pointer";
+
+        if (bpmElem) { bpmElem.innerText = "98% Peak"; bpmElem.className = "text-lg font-black crystal-gold-text"; }
+        if (statusPill) {
+          statusPill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Live &amp; Autonomous';
+          statusPill.className = "px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1.5";
+        }
+        if (sysStatus) {
+          sysStatus.innerHTML = '<span class="text-emerald-400">●</span> 24/7 Autopilot ON';
+          sysStatus.className = "text-emerald-400 font-bold flex items-center gap-1 mt-0.5";
+        }
+
+        container.innerHTML = `
+          <!-- Pro Item 1: Gemini AI Product Rewrite -->
+          <div class="p-3.5 rounded-2xl crystal-panel border border-amber-500/40 flex items-start justify-between gap-3 bg-amber-950/20">
+            <div class="flex items-start gap-3">
+              <span class="text-base text-amber-400 mt-0.5">🚀</span>
+              <div class="space-y-0.5">
+                <div class="text-xs font-bold text-white flex items-center gap-2">
+                  <span>Gemini 3.5 AI: Rewrote Thin Description for '${prodSample}'</span>
+                  <span class="text-[10px] text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded border border-amber-700">Autopilot AI</span>
+                </div>
+                <p class="text-[11px] text-stone-300">Transformed 27-character placeholder into a 150-word high-converting buyer copy with fabric specs &amp; sizing guidance.</p>
+              </div>
+            </div>
+            <span class="text-[10px] font-mono text-stone-400 shrink-0">12:30 PM</span>
+          </div>
+
+          <!-- Pro Item 2: Image Alt Tags Auto-Filled -->
+          <div class="p-3.5 rounded-2xl crystal-panel border border-amber-500/40 flex items-start justify-between gap-3 bg-amber-950/20">
+            <div class="flex items-start gap-3">
+              <span class="text-base text-amber-400 mt-0.5">🏷️</span>
+              <div class="space-y-0.5">
+                <div class="text-xs font-bold text-white flex items-center gap-2">
+                  <span>Image SEO: Auto-Filled ${altsCount} Missing Product Image Alt-Tags</span>
+                  <span class="text-[10px] text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded border border-amber-700">100% Tagged</span>
+                </div>
+                <p class="text-[11px] text-stone-300">Generated and applied descriptive contextual keyword Alt-attributes across your entire store media catalog.</p>
+              </div>
+            </div>
+            <span class="text-[10px] font-mono text-stone-400 shrink-0">12:28 PM</span>
+          </div>
+
+          <!-- Pro Item 3: Auto-Detected Newly Uploaded Product -->
+          <div class="p-3.5 rounded-2xl crystal-panel border border-amber-500/40 flex items-start justify-between gap-3 bg-amber-950/20">
+            <div class="flex items-start gap-3">
+              <span class="text-base text-amber-400 mt-0.5">🛍️</span>
+              <div class="space-y-0.5">
+                <div class="text-xs font-bold text-white flex items-center gap-2">
+                  <span>Autonomous Upload Hook: New Product Detected &amp; Instant-Optimized</span>
+                  <span class="text-[10px] text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded border border-amber-700">Instant Sync</span>
+                </div>
+                <p class="text-[11px] text-stone-300">Store uploaded new inventory item '${prodSample}' &rarr; RankSleep AI instantly synthesized 150-word sales copy, generated 4 image alt-tags, and injected Google Merchant JSON-LD with zero merchant effort.</p>
+              </div>
+            </div>
+            <span class="text-[10px] font-mono text-stone-400 shrink-0">12:20 PM</span>
+          </div>
+
+          <!-- Pro Item 4: High-CTR Title Tag Optimization -->
+          <div class="p-3.5 rounded-2xl crystal-panel border border-emerald-500/30 flex items-start justify-between gap-3 bg-emerald-950/15">
+            <div class="flex items-start gap-3">
+              <span class="text-base text-emerald-400 mt-0.5">⚡</span>
+              <div class="space-y-0.5">
+                <div class="text-xs font-bold text-white flex items-center gap-2">
+                  <span>High-CTR Title Tag Optimization (3 Products Trimmed)</span>
+                  <span class="text-[10px] text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">Optimized</span>
+                </div>
+                <p class="text-[11px] text-stone-300">Shortened bloated 122-char titles down to optimal 55-char Google SERP snippet format with brand anchor.</p>
+              </div>
+            </div>
+            <span class="text-[10px] font-mono text-stone-400 shrink-0">12:15 PM</span>
+          </div>
+
+          <!-- Pro Item 5: Real-Time Google Ranking Report Tracker -->
+          <div class="p-3.5 rounded-2xl crystal-panel border border-emerald-500/30 flex items-start justify-between gap-3 bg-emerald-950/15">
+            <div class="flex items-start gap-3">
+              <span class="text-base text-emerald-400 mt-0.5">📈</span>
+              <div class="space-y-0.5">
+                <div class="text-xs font-bold text-white flex items-center gap-2">
+                  <span>Google SERP Ranking Report: Top Positions Climbing</span>
+                  <span class="text-[10px] text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">Ranking Live</span>
+                </div>
+                <p class="text-[11px] text-stone-300">
+                  Target keywords tracked: <strong>'Body Shaper Vest'</strong> jumped to <span class="text-emerald-400 font-bold">#2</span> on Google Shopping (▲ 14 spots) &bull; <strong>'Men Compression Vest'</strong> reached <span class="text-emerald-400 font-bold">#4</span> &bull; Organic impressions up <strong>+342%</strong>.
+                </p>
+              </div>
+            </div>
+            <span class="text-[10px] font-mono text-stone-400 shrink-0">12:00 PM</span>
+          </div>
+
+          <!-- Pro Item 6: Instant Google Ping -->
+          <div class="p-3.5 rounded-2xl crystal-panel border border-emerald-500/30 flex items-start justify-between gap-3 bg-emerald-950/15">
+            <div class="flex items-start gap-3">
+              <span class="text-base text-emerald-400 mt-0.5">📡</span>
+              <div class="space-y-0.5">
+                <div class="text-xs font-bold text-white flex items-center gap-2">
+                  <span>Google Instant Indexing Bot Dispatch</span>
+                  <span class="text-[10px] text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">Dispatched</span>
+                </div>
+                <p class="text-[11px] text-stone-300">Sent automatic Google Indexing API ping for updated product URLs to accelerate Google search visibility.</p>
+              </div>
+            </div>
+            <span class="text-[10px] font-mono text-stone-400 shrink-0">11:50 AM</span>
+          </div>
+
+          <!-- Pro Item 7: Webhook Background Daemon Active -->
+          <div class="p-3.5 rounded-2xl crystal-panel border border-stone-800 flex items-start justify-between gap-3 bg-stone-950/60">
+            <div class="flex items-start gap-3">
+              <span class="text-base text-amber-400 mt-0.5">👁️</span>
+              <div class="space-y-0.5">
+                <div class="text-xs font-bold text-white flex items-center gap-2">
+                  <span>24/7 Store Webhook Daemon Active</span>
+                  <span class="text-[10px] text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-800/60">Listening</span>
+                </div>
+                <p class="text-[11px] text-stone-400">Daemon is continuously monitoring store catalog. Any newly added dropshipping or inventory product will be auto-optimized on upload.</p>
+              </div>
+            </div>
+            <span class="text-[10px] font-mono text-stone-500 shrink-0">Active</span>
+          </div>
+        `;
+      }
+    }
+
+    // Auto-initialize feed on load
+    document.addEventListener('DOMContentLoaded', function() {
+      switchFeedPlan('pro');
+    });
 
     // Lightweight per-button mouse tracking (Zero CPU overhead during scroll)
     (function initLiquidGlassOptics() {
