@@ -1507,7 +1507,11 @@
         });
         const data = await res.json();
         await delay(500);
-        addLog(`<span class="text-emerald-400 font-bold">✅ Pro AI Autopilot Fully Deployed!</span>`);
+        if (data.status === 'success') {
+          addLog(`<span class="text-emerald-400 font-bold">✅ Pro AI Autopilot Fully Deployed!</span>`);
+        } else {
+          addLog(`<span class="text-rose-400 font-bold">❌ Deployment Failed: ${data.message || 'Error'}</span>`);
+        }
         showDeployResult(resultEl, 'pro', data, storeUrl);
       } catch(err) {
         addLog(`<span class="text-rose-400">❌ Error: ${err.message}</span>`);
@@ -1516,7 +1520,7 @@
 
     function showDeployResult(resultEl, plan, data, storeUrl) {
       const isPro = plan === 'pro';
-      const statusOk = data?.status !== 'error';
+      const statusOk = data?.status === 'success';
       resultEl.classList.remove('hidden');
       resultEl.innerHTML = statusOk ? `
         <div class="p-4 rounded-2xl ${isPro ? 'crystal-panel-highlight border border-amber-500/40' : 'crystal-panel border border-emerald-500/30'} space-y-3">
@@ -1526,25 +1530,34 @@
           </div>
           <div class="text-xs text-stone-300 space-y-1">
             ${isPro ? `
-              <div>📦 Products Updated: <strong class="text-amber-400">${data.products_updated || '—'} items</strong></div>
-              <div>🖼️ Alt-Tags Fixed: <strong class="text-amber-400">All catalog images</strong></div>
-              <div>🚀 Autopilot: <strong class="text-emerald-400">24/7 Active</strong></div>
+              <div>📦 Products Updated: <strong class="text-amber-400">${data.products_updated || '0'} items</strong></div>
+              <div>🖼️ Alt-Tags Fixed: <strong class="text-amber-400">${data.images_updated || '0'} images</strong></div>
+              <div>🚀 Autopilot: <strong class="text-emerald-400">24/7 Active on ${data.shop_name || 'Store'}</strong></div>
             ` : `
               <div>🗺️ Sitemap: <strong class="text-amber-400">Generated & Submitted</strong></div>
               <div>🔒 SSL: <strong class="text-amber-400">Verified Active</strong></div>
               <div>🔗 404 Redirects: <strong class="text-amber-400">Configured</strong></div>
             `}
-            ${data.message ? `<div class="text-stone-400 text-[11px] pt-1">${data.message}</div>` : ''}
+            ${data.message ? `<div class="text-stone-300 text-[11px] pt-1 font-medium">${data.message}</div>` : ''}
           </div>
           <button onclick="closeFixModal()" class="w-full apple-crystal-btn font-bold py-2.5 rounded-xl text-xs">
             Done & Close ✓
           </button>
         </div>
       ` : `
-        <div class="p-4 rounded-2xl bg-rose-950/40 border border-rose-800 space-y-2">
-          <div class="text-rose-300 font-bold text-xs">❌ Deployment Error</div>
-          <div class="text-stone-300 text-xs">${data?.message || 'Unknown error. Please try again.'}</div>
-          <button onclick="resetModalToPlans()" class="text-xs text-amber-400 hover:underline cursor-pointer">← Try Again</button>
+        <div class="p-4 rounded-2xl bg-rose-950/40 border border-rose-800 space-y-2.5">
+          <div class="text-rose-300 font-bold text-xs flex items-center gap-1.5">
+            <span>❌</span> <span>Deployment Error</span>
+          </div>
+          <div class="text-stone-200 text-xs leading-relaxed">${data?.message || 'Unknown error. Please try again.'}</div>
+          ${data?.auth_url ? `
+            <a href="${data.auth_url}" target="_top" class="block w-full text-center apple-crystal-btn font-bold py-2.5 rounded-xl text-xs transition cursor-pointer mt-1">
+              ⚡ Click to Authorize App on Shopify &rarr;
+            </a>
+          ` : ''}
+          <div class="pt-1">
+            <button onclick="resetModalToPlans()" class="text-xs text-amber-400 hover:underline cursor-pointer">← Back to Plans</button>
+          </div>
         </div>
       `;
     }
