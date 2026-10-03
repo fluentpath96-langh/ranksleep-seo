@@ -38,7 +38,7 @@ APP_URL = os.environ.get("APP_URL", "https://ranksleepseo.com")
 
 import json
 
-def save_shop_token(shop: str, token: str):
+def save_shop_token(shop: str, token: str, scope: str = ""):
     stores = {}
     if os.path.exists(STORES_FILE):
         try:
@@ -46,16 +46,52 @@ def save_shop_token(shop: str, token: str):
                 stores = json.load(f)
         except Exception:
             stores = {}
-    stores[shop] = token
-    with open(STORES_FILE, "w", encoding="utf-8") as f:
-        json.dump(stores, f, indent=2)
+    
+    clean_shop = shop.replace("https://", "").replace("http://", "").strip().rstrip("/")
+    stores[clean_shop] = token
+    # Save aliases so lookup never fails
+    if "ccvjvf-0r" in clean_shop or "vilonix" in clean_shop:
+        stores["ccvjvf-0r.myshopify.com"] = token
+        stores["vilonix.shop"] = token
+        if scope:
+            stores["_scopes"] = scope
+    
+    try:
+        with open(STORES_FILE, "w", encoding="utf-8") as f:
+            json.dump(stores, f, indent=2)
+        print(f"🔥 [TOKEN SAVED PERSISTENTLY] Store: {clean_shop} | Token preview: {token[:8]}... | Scope: {scope}")
+    except Exception as e:
+        print(f"❌ Error writing stores file: {e}")
 
-def get_shop_token(shop: str):
+def get_shop_token(shop: str = None):
+    # 1. Environment variable (Render permanent config fallback)
+    env_token = os.environ.get("SHOPIFY_ACCESS_TOKEN")
+    if env_token and env_token.strip():
+        return env_token.strip()
+    
+    # 2. File storage lookup
     if os.path.exists(STORES_FILE):
         try:
             with open(STORES_FILE, "r", encoding="utf-8") as f:
                 stores = json.load(f)
-                return stores.get(shop)
+                if not stores:
+                    return None
+                if shop:
+                    clean = shop.replace("https://", "").replace("http://", "").strip().rstrip("/")
+                    if clean in stores:
+                        return stores[clean]
+                    if "vilonix" in clean and "ccvjvf-0r.myshopify.com" in stores:
+                        return stores["ccvjvf-0r.myshopify.com"]
+                    if "ccvjvf-0r" in clean and "vilonix.shop" in stores:
+                        return stores["vilonix.shop"]
+                # Default fallback: return ccvjvf-0r or first valid token
+                if "ccvjvf-0r.myshopify.com" in stores:
+                    return stores["ccvjvf-0r.myshopify.com"]
+                if "vilonix.shop" in stores:
+                    return stores["vilonix.shop"]
+                for k, v in stores.items():
+                    if not k.startswith("_") and isinstance(v, str):
+                        return v
         except Exception:
             pass
     return None
@@ -135,24 +171,23 @@ async def push_shopify_live(data: ShopifyPushRequest):
     domain = data.store_url.replace("https://", "").replace("http://", "").strip().rstrip("/")
     token = data.token.strip()
 
-    # Check for stored offline token if not provided or in demo/placeholder mode
+    # Admin REST API strictly requires *.myshopify.com domain
+    target_shop = "ccvjvf-0r.myshopify.com" if "vilonix" in domain else domain
+    if not target_shop.endswith(".myshopify.com"):
+        target_shop = f"{target_shop.split('.')[0]}.myshopify.com"
+
+    auth_install_url = f"{APP_URL}/api/shopify/auth?shop={target_shop}"
+
+    # Check for stored offline token if not provided or in placeholder mode
     if not token or token in ("demo_token", "pro_deploy", ""):
-        # Try to load the real OAuth token saved during Shopify app install
-        saved = (
-            get_shop_token(domain)
-            or get_shop_token(f"{domain.split('.')[0]}.myshopify.com")
-            or get_shop_token(domain.replace("vilonix.shop", "ccvjvf-0r.myshopify.com"))
-        )
-        if saved:
-            token = saved
-        else:
+        token = get_shop_token(target_shop) or get_shop_token(domain)
+        if not token:
             return {
-                "status": "simulated_success",
-                "shop_name": domain.split('.')[0].capitalize(),
-                "domain": domain,
-                "products_updated": 6,
-                "images_updated": 27,
-                "message": f"SEO Autopilot connected to {domain}! AI Meta tags, 27 Image Alts, and Product Schemas prepared and ready to sync with Shopify."
+                "status": "error",
+                "code": 401,
+                "auth_url": auth_install_url,
+                "message": f"Shopify token not found for {target_shop}. Please authorize the app on your Shopify store.",
+                "action_required": "reauthorize"
             }
 
     headers = {
@@ -160,132 +195,115 @@ async def push_shopify_live(data: ShopifyPushRequest):
         "Content-Type": "application/json"
     }
 
-    # Build list of endpoints to try — always include .myshopify.com variant
-    # because Shopify Admin API only works with .myshopify.com domain
-    test_endpoints = []
-    if domain.endswith(".myshopify.com"):
-        test_endpoints.append(f"https://{domain}/admin/api/2024-01/shop.json")
-    else:
-        # Try custom domain first, then known .myshopify.com slug
-        brand_slug = domain.split(".")[0]
-        test_endpoints.append(f"https://{brand_slug}.myshopify.com/admin/api/2024-01/shop.json")
-        test_endpoints.append(f"https://{domain}/admin/api/2024-01/shop.json")
-        # Also try token saved under .myshopify.com domain key
-        myshopify_domain = f"{brand_slug}.myshopify.com"
-        alt_token = get_shop_token(myshopify_domain)
-        if alt_token and alt_token != token:
-            # Try alt_token too — use it as primary if the current one fails
-            test_endpoints.insert(0, f"https://{myshopify_domain}/admin/api/2024-01/shop.json")
-            token = alt_token  # Prefer the .myshopify.com token
-
-    connected = False
-    shop_data = {}
-    active_domain = domain
-    last_error_code = None
-
-    for ep in test_endpoints:
-        try:
-            r = requests.get(ep, headers={"X-Shopify-Access-Token": token, "Content-Type": "application/json"}, timeout=7)
-            if r.status_code == 200:
-                connected = True
-                shop_data = r.json().get("shop", {})
-                active_domain = ep.split("/admin")[0].replace("https://", "")
-                break
-            else:
-                last_error_code = r.status_code
-        except Exception:
-            continue
-
-    if not connected and last_error_code in [401, 403]:
+    # Test connection and permissions
+    shop_url = f"https://{target_shop}/admin/api/2024-01/shop.json"
+    try:
+        r = requests.get(shop_url, headers=headers, timeout=8)
+    except Exception as e:
         return {
             "status": "error",
-            "code": last_error_code,
-            "message": "Shopify Rejected Token: Please re-install the RankSleep app from your Shopify Admin to refresh the access token with updated permissions."
+            "message": f"Could not reach Shopify Admin API for {target_shop}: {str(e)}"
         }
 
-    if connected:
-        # Fetch products to update
-        prod_url = f"https://{active_domain}/admin/api/2024-01/products.json?limit=25"
-        prod_count = 0
-        images_updated = 0
-        shop_name = shop_data.get('name', domain.split('.')[0].capitalize())
+    if r.status_code in [401, 403]:
+        return {
+            "status": "error",
+            "code": r.status_code,
+            "auth_url": auth_install_url,
+            "message": "Shopify rejected token (HTTP 401/403). App needs to be re-authorized to grant 'write_products' permission.",
+            "action_required": "reauthorize"
+        }
 
-        try:
-            pres = requests.get(prod_url, headers={"X-Shopify-Access-Token": token, "Content-Type": "application/json"}, timeout=8)
-            if pres.status_code == 200:
-                prods = pres.json().get("products", [])
-                prod_count = len(prods)
+    if r.status_code != 200:
+        return {
+            "status": "error",
+            "code": r.status_code,
+            "message": f"Shopify Admin returned unexpected status {r.status_code}: {r.text}"
+        }
 
-                for p in prods:
-                    pid = p.get("id")
-                    p_title = p.get("title", "")
-                    p_body = p.get("body_html", "") or ""
-                    clean_body = re.sub(r'<[^<]+?>', '', p_body).strip()
-                    needs_update = False
+    shop_data = r.json().get("shop", {})
+    shop_name = shop_data.get('name', target_shop.split('.')[0].capitalize())
 
-                    # 1. Image Alt Tags — fill missing ones
-                    for img in p.get("images", []):
-                        if not img.get("alt") or not img.get("alt").strip():
-                            img_id = img.get("id")
-                            alt_text = f"{p_title[:50]} | {shop_name}"
-                            try:
-                                requests.put(
-                                    f"https://{active_domain}/admin/api/2024-01/products/{pid}/images/{img_id}.json",
-                                    headers={"X-Shopify-Access-Token": token, "Content-Type": "application/json"},
-                                    json={"image": {"id": img_id, "alt": alt_text}},
-                                    timeout=5
-                                )
-                                images_updated += 1
-                            except Exception:
-                                pass
+    # Fetch products to optimize
+    prod_url = f"https://{target_shop}/admin/api/2024-01/products.json?limit=25"
+    prod_count = 0
+    images_updated = 0
+    products_modified = 0
 
-                    # 2. Title — trim if over 70 chars
-                    opt_title = p_title
-                    if len(p_title) > 70:
-                        opt_title = p_title[:55].strip() + f" | {shop_name}"
-                        needs_update = True
+    try:
+        pres = requests.get(prod_url, headers=headers, timeout=10)
+        if pres.status_code == 200:
+            prods = pres.json().get("products", [])
+            prod_count = len(prods)
 
-                    # 3. Description — enrich if thin (<100 chars)
-                    rich_desc = p_body
-                    if len(clean_body) < 100:
-                        rich_desc = (
-                            f"<p>Discover premium quality with the <strong>{p_title}</strong> from {shop_name}. "
-                            f"Expertly crafted with high-grade materials for superior durability, modern style, "
-                            f"and everyday comfort. Backed by our customer satisfaction guarantee with fast, "
-                            f"secure delivery worldwide. Shop with confidence today!</p>"
-                        )
-                        needs_update = True
+            for p in prods:
+                pid = p.get("id")
+                p_title = p.get("title", "")
+                p_body = p.get("body_html", "") or ""
+                clean_body = re.sub(r'<[^<]+?>', '', p_body).strip()
+                needs_update = False
 
-                    if needs_update:
+                # 1. Image Alt Tags — fill missing ones
+                for img in p.get("images", []):
+                    if not img.get("alt") or not img.get("alt").strip():
+                        img_id = img.get("id")
+                        alt_text = f"{p_title[:50]} | {shop_name}"
                         try:
-                            requests.put(
-                                f"https://{active_domain}/admin/api/2024-01/products/{pid}.json",
-                                headers={"X-Shopify-Access-Token": token, "Content-Type": "application/json"},
-                                json={"product": {"id": pid, "title": opt_title, "body_html": rich_desc}},
-                                timeout=6
+                            put_img = requests.put(
+                                f"https://{target_shop}/admin/api/2024-01/products/{pid}/images/{img_id}.json",
+                                headers=headers,
+                                json={"image": {"id": img_id, "alt": alt_text}},
+                                timeout=5
                             )
+                            if put_img.status_code == 200:
+                                images_updated += 1
                         except Exception:
                             pass
-        except Exception:
-            pass
 
-        return {
-            "status": "success",
-            "shop_name": shop_name,
-            "domain": active_domain,
-            "products_updated": max(1, prod_count),
-            "images_updated": images_updated,
-            "message": f"✅ Live sync complete for {shop_name}! {prod_count} products & {images_updated} image alt-tags pushed to your Shopify store!"
-        }
-    else:
-        # Could not connect — return simulated result for testing
-        return {
-            "status": "simulated_success",
-            "shop_name": domain.split(".")[0].capitalize(),
-            "domain": domain,
-            "products_updated": 6,
-            "message": f"SEO Autopilot queued for {domain}. Connect via OAuth to push live changes directly into your Shopify product catalog."
-        }
+                # 2. Title — trim if over 70 chars
+                opt_title = p_title
+                if len(p_title) > 70:
+                    opt_title = p_title[:55].strip() + f" | {shop_name}"
+                    needs_update = True
+
+                # 3. Description — enrich if thin (<100 chars)
+                rich_desc = p_body
+                if len(clean_body) < 100:
+                    rich_desc = (
+                        f"<p>Discover premium quality with the <strong>{p_title}</strong> from {shop_name}. "
+                        f"Expertly crafted with high-grade materials for superior durability, modern style, "
+                        f"and everyday comfort. Backed by our customer satisfaction guarantee with fast, "
+                        f"secure delivery worldwide. Shop with confidence today!</p>"
+                    )
+                    needs_update = True
+
+                if needs_update:
+                    try:
+                        put_prod = requests.put(
+                            f"https://{target_shop}/admin/api/2024-01/products/{pid}.json",
+                            headers=headers,
+                            json={"product": {"id": pid, "title": opt_title, "body_html": rich_desc}},
+                            timeout=7
+                        )
+                        if put_prod.status_code == 200:
+                            products_modified += 1
+                            print(f"✅ Product updated live on Shopify: {opt_title} (ID: {pid})")
+                        else:
+                            print(f"⚠️ Shopify PUT failed for product {pid}: {put_prod.status_code} {put_prod.text}")
+                    except Exception as e:
+                        print(f"❌ Product update exception for {pid}: {e}")
+    except Exception as e:
+        print(f"❌ Error fetching products from Shopify: {e}")
+
+    return {
+        "status": "success",
+        "shop_name": shop_name,
+        "domain": target_shop,
+        "products_catalog_total": prod_count,
+        "products_updated": products_modified,
+        "images_updated": images_updated,
+        "message": f"✅ Live sync complete! {products_modified} products enriched & {images_updated} image alt-tags updated directly on your Shopify store!"
+    }
 
 # --- Shopify Mandatory GDPR Webhooks ---
 @app.post("/webhooks/customers/data_request")
@@ -320,12 +338,14 @@ async def webhook_product_create(request: Request):
 
 # --- Official Shopify App Store & Partner OAuth Endpoints ---
 @app.get("/api/shopify/auth")
-async def shopify_auth(shop: str = "vilonix.shop"):
+async def shopify_auth(shop: str = "ccvjvf-0r.myshopify.com"):
     shop_clean = shop.replace("https://", "").replace("http://", "").strip().rstrip("/")
-    if not shop_clean.endswith(".myshopify.com") and "." not in shop_clean:
+    if "vilonix" in shop_clean:
+        shop_clean = "ccvjvf-0r.myshopify.com"
+    elif not shop_clean.endswith(".myshopify.com") and "." not in shop_clean:
         shop_clean = f"{shop_clean}.myshopify.com"
     redirect_uri = f"{APP_URL}/api/shopify/callback"
-    scopes = "read_products,write_products,read_content,write_content,write_metafields,read_metafields"
+    scopes = "read_products,write_products,read_content,write_content,write_metafields,read_metafields,read_files,write_files"
     auth_url = (
         f"https://{shop_clean}/admin/oauth/authorize?"
         f"client_id={SHOPIFY_CLIENT_ID}&"
@@ -345,15 +365,66 @@ async def shopify_callback(shop: str, code: str):
     }
     from fastapi.responses import RedirectResponse
     try:
-        r = requests.post(token_url, json=payload, timeout=10)
+        r = requests.post(token_url, json=payload, timeout=12)
         if r.status_code == 200:
             token_data = r.json()
             access_token = token_data.get("access_token")
-            save_shop_token(shop, access_token)
-            return RedirectResponse(f"/?installed=true&shop={shop}")
-    except Exception:
-        pass
+            scope_granted = token_data.get("scope", "")
+            print(f"🔥 [SHOPIFY OAUTH SUCCESS] Shop: {shop} | Token: {access_token} | Scope: {scope_granted}")
+            save_shop_token(shop, access_token, scope=scope_granted)
+            return RedirectResponse(f"/?installed=true&shop={shop}&scopes={scope_granted}")
+        else:
+            print(f"❌ [SHOPIFY OAUTH REJECTED] Code exchange failed: {r.status_code} {r.text}")
+    except Exception as e:
+        print(f"❌ [SHOPIFY OAUTH EXCEPTION] {e}")
     return RedirectResponse(f"/?installed=false&shop={shop}")
+
+@app.get("/api/shopify/verify-scopes")
+async def verify_shopify_scopes(shop: str = "ccvjvf-0r.myshopify.com"):
+    """
+    Verifies live what scopes the current stored token has.
+    Calls Shopify: GET /admin/oauth/access_scopes.json
+    """
+    token = get_shop_token(shop)
+    if not token:
+        return {
+            "status": "missing_token",
+            "message": "No active Shopify token found in stores.json or SHOPIFY_ACCESS_TOKEN env variable.",
+            "auth_install_url": f"{APP_URL}/api/shopify/auth?shop={shop}"
+        }
+
+    target_shop = "ccvjvf-0r.myshopify.com" if "vilonix" in shop else shop
+    if not target_shop.endswith(".myshopify.com"):
+        target_shop = f"{target_shop}.myshopify.com"
+
+    url = f"https://{target_shop}/admin/oauth/access_scopes.json"
+    headers = {
+        "X-Shopify-Access-Token": token,
+        "Content-Type": "application/json"
+    }
+    try:
+        r = requests.get(url, headers=headers, timeout=10)
+        if r.status_code == 200:
+            scopes_list = [s.get("handle") for s in r.json().get("access_scopes", [])]
+            return {
+                "status": "success",
+                "shop": target_shop,
+                "token_preview": f"{token[:10]}...{token[-4:]}" if len(token) > 14 else "token_set",
+                "write_products_granted": "write_products" in scopes_list,
+                "all_scopes": scopes_list,
+                "message": "✅ Token is VALID and ACTIVE with required write permissions!" if "write_products" in scopes_list else "⚠️ Token lacks write_products scope. Re-authorization required."
+            }
+        else:
+            return {
+                "status": "rejected",
+                "status_code": r.status_code,
+                "shop": target_shop,
+                "error_detail": r.text,
+                "auth_install_url": f"{APP_URL}/api/shopify/auth?shop={target_shop}",
+                "message": f"Shopify rejected token with HTTP {r.status_code}. Please click auth_install_url to re-approve scopes."
+            }
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
 
 WORKSPACES_FILE = os.path.join(BASE_DIR, "client_workspaces.json")
 
