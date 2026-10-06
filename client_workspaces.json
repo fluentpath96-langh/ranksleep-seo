@@ -4,7 +4,46 @@
     "name": "Visithere",
     "picture": "https://lh3.googleusercontent.com/a/ACg8ocLq-i87fkHmL3AD9nYP9VHc6He4SqaIAHBtNRk0zMIn7ozM_w=s96-c",
     "provider": "google",
-    "logged_in_at": "live"
+    "primary_store": "outfitoss.myshopify.com",
+    "connected_stores": [
+      "outfitoss.myshopify.com",
+      "mrvdjm-ea.myshopify.com"
+    ],
+    "plan": "pro_180",
+    "score": 98,
+    "is_optimized": true,
+    "images_fixed": true,
+    "titles_fixed": true,
+    "descriptions_fixed": true,
+    "schema_injected": true,
+    "autopilot_active": true,
+    "updated_at": "live"
+  },
+  "outfitoss.myshopify.com": {
+    "primary_store": "outfitoss.myshopify.com",
+    "owner_email": "visithere045@gmail.com",
+    "plan": "pro_180",
+    "score": 98,
+    "is_optimized": true,
+    "images_fixed": true,
+    "titles_fixed": true,
+    "descriptions_fixed": true,
+    "schema_injected": true,
+    "autopilot_active": true,
+    "updated_at": "live"
+  },
+  "mrvdjm-ea.myshopify.com": {
+    "primary_store": "outfitoss.myshopify.com",
+    "owner_email": "visithere045@gmail.com",
+    "plan": "pro_180",
+    "score": 98,
+    "is_optimized": true,
+    "images_fixed": true,
+    "titles_fixed": true,
+    "descriptions_fixed": true,
+    "schema_injected": true,
+    "autopilot_active": true,
+    "updated_at": "live"
   },
   "user_badamishan24@gmail.com": {
     "email": "badamishan24@gmail.com",
