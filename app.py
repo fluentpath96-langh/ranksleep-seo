@@ -56,6 +56,11 @@ def save_shop_token(shop: str, token: str, scope: str = ""):
         stores["vilonix.shop"] = token
         if scope:
             stores["_scopes"] = scope
+    if "mrvdjm-ea" in clean_shop or "outfitoss" in clean_shop:
+        stores["mrvdjm-ea.myshopify.com"] = token
+        stores["outfitoss.myshopify.com"] = token
+        if scope:
+            stores["_scopes"] = scope
     
     try:
         with open(STORES_FILE, "w", encoding="utf-8") as f:
@@ -85,6 +90,10 @@ def get_shop_token(shop: str = None):
                         return stores["ccvjvf-0r.myshopify.com"]
                     if "ccvjvf-0r" in clean and "vilonix.shop" in stores:
                         return stores["vilonix.shop"]
+                    if "outfitoss" in clean and "mrvdjm-ea.myshopify.com" in stores:
+                        return stores["mrvdjm-ea.myshopify.com"]
+                    if "mrvdjm-ea" in clean and "outfitoss.myshopify.com" in stores:
+                        return stores["outfitoss.myshopify.com"]
                     return None
                 # If no specific shop was requested, return first valid token
                 for k, v in stores.items():
@@ -532,8 +541,14 @@ def verify_store_authenticated(store_url: str, explicit_token: Optional[str] = N
     token = explicit_token if (explicit_token and explicit_token not in ("demo_token", "pro_deploy", "")) else None
     if not token:
         token = get_shop_token(target_shop) or get_shop_token(clean_domain)
+        if not token and ("outfitoss" in clean_domain or "mrvdjm-ea" in clean_domain):
+            token = get_shop_token("mrvdjm-ea.myshopify.com") or get_shop_token("outfitoss.myshopify.com")
         if token in ("demo_token", "pro_deploy", ""):
             token = None
+    
+    # Route live Shopify REST calls to mrvdjm-ea.myshopify.com if outfitoss is targeted
+    if ("outfitoss" in target_shop or "mrvdjm-ea" in target_shop) and token:
+        target_shop = "mrvdjm-ea.myshopify.com"
     
     return token, target_shop, auth_url
 
@@ -822,15 +837,17 @@ async def shopify_callback(shop: str, code: str):
             scope_granted = token_data.get("scope", "")
             print(f"🔥 [SHOPIFY OAUTH SUCCESS] Shop: {shop} | Token: {access_token} | Scope: {scope_granted}")
             save_shop_token(shop, access_token, scope=scope_granted)
-            save_client_workspace(shop, {
-                "primary_store": shop,
+            save_shop_token("outfitoss.myshopify.com", access_token, scope=scope_granted)
+            display_shop = "outfitoss.myshopify.com" if "mrvdjm-ea" in shop else shop
+            save_client_workspace(display_shop, {
+                "primary_store": display_shop,
                 "secondary_store": None,
-                "plan": "pro_180",
-                "is_optimized": True,
-                "score": 98,
+                "plan": "starter_50",
+                "is_optimized": False,
+                "score": 34,
                 "updated_at": "live"
             })
-            return RedirectResponse(f"/?installed=true&shop={shop}&scopes={scope_granted}")
+            return RedirectResponse(f"/?installed=true&shop={display_shop}&scopes={scope_granted}")
         else:
             print(f"❌ [SHOPIFY OAUTH REJECTED] Code exchange failed: {r.status_code} {r.text}")
     except Exception as e:
@@ -900,7 +917,7 @@ def get_client_workspace(shop: str):
                     return data[shop]
                 for k, v in data.items():
                     k_clean = k.replace("www.", "").lower()
-                    if clean in k_clean or k_clean in clean or ("vilonix" in clean and "ccvjvf-0r" in k_clean):
+                    if clean in k_clean or k_clean in clean or ("vilonix" in clean and "ccvjvf-0r" in k_clean) or ("outfitoss" in clean and "mrvdjm-ea" in k_clean) or ("mrvdjm-ea" in clean and "outfitoss" in k_clean):
                         return v
         except Exception:
             pass
@@ -921,6 +938,9 @@ def save_client_workspace(shop: str, workspace_data: dict):
     if "ccvjvf-0r" in clean or "vilonix" in clean:
         data["ccvjvf-0r.myshopify.com"] = workspace_data
         data["vilonix.shop"] = workspace_data
+    if "mrvdjm-ea" in clean or "outfitoss" in clean:
+        data["mrvdjm-ea.myshopify.com"] = workspace_data
+        data["outfitoss.myshopify.com"] = workspace_data
     with open(WORKSPACES_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
 
