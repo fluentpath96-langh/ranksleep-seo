@@ -128,6 +128,15 @@ def calculate_earned_score(ws: dict, base_audit_score: int = 34) -> int:
         score += 24
     return min(98, max(base_audit_score, score))
 
+def smart_truncate_title(text: str, max_chars: int = 48) -> str:
+    """Safely truncates title at word boundary so words are never cut mid-spelling."""
+    text = (text or "").strip()
+    if len(text) <= max_chars:
+        return text
+    truncated = text[:max_chars].rsplit(" ", 1)[0].strip()
+    truncated = re.sub(r'[\s\-–—,:;]+$', '', truncated)
+    return truncated if truncated else text[:max_chars]
+
 class AuditRequest(BaseModel):
     url: str
 
@@ -315,7 +324,7 @@ async def push_shopify_live(data: ShopifyPushRequest):
                 clean_title = p_title.split("|")[0].strip() if "|" in p_title else p_title.strip()
                 if not clean_title:
                     clean_title = "Trending Product"
-                opt_title = f"{clean_title[:45]} | {shop_name} Premium Collection"
+                opt_title = f"{smart_truncate_title(clean_title, 48)} | {shop_name} Premium Collection"
 
                 # Smart Niche-Aware Copy powered by Google Gemini AI
                 rich_desc = generate_smart_product_copy(
@@ -331,7 +340,7 @@ async def push_shopify_live(data: ShopifyPushRequest):
                     for idx, img in enumerate(p.get("images", [])):
                         img_id = img.get("id")
                         if img_id:
-                            alt_text = f"{clean_title[:45]} | {shop_name} Official Product #{idx+1}"
+                            alt_text = f"{smart_truncate_title(clean_title, 48)} | {shop_name} Official Product #{idx+1}"
                             try:
                                 put_img = requests.put(
                                     f"https://{target_shop}/admin/api/2024-01/products/{pid}/images/{img_id}.json",
@@ -651,7 +660,7 @@ async def fix_images_action(data: FixActionRequest):
                 for idx, img in enumerate(p.get("images", [])):
                     img_id = img.get("id")
                     if img_id:
-                        alt_text = f"{p_title[:45]} | Official Product #{idx+1}"
+                        alt_text = f"{smart_truncate_title(p_title, 48)} | Official Product #{idx+1}"
                         try:
                             put_img = requests.put(
                                 f"https://{target_shop}/admin/api/2024-01/products/{p['id']}/images/{img_id}.json",
@@ -701,7 +710,7 @@ async def fix_titles_action(data: FixActionRequest):
             for p in pres.json().get("products", []):
                 pid = p.get("id")
                 clean_title = p.get("title", "").split("|")[0].strip()
-                opt_title = f"{clean_title[:45]} | Premium Collection"
+                opt_title = f"{smart_truncate_title(clean_title, 48)} | Premium Collection"
                 try:
                     put_p = requests.put(
                         f"https://{target_shop}/admin/api/2024-01/products/{pid}.json",
