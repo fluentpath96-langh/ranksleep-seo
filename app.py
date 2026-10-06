@@ -520,180 +520,194 @@ class FixActionRequest(BaseModel):
     allow_descriptions: Optional[bool] = True
     allow_schema: Optional[bool] = True
 
+def verify_store_authenticated(store_url: str, explicit_token: Optional[str] = None):
+    """
+    Strict authentication check.
+    Returns (token, target_shop, auth_url).
+    """
+    clean_domain = store_url.replace("https://", "").replace("http://", "").strip().rstrip("/").split("/")[0].replace("www.", "")
+    target_shop = clean_domain if clean_domain.endswith(".myshopify.com") else f"{clean_domain.split('.')[0]}.myshopify.com"
+    auth_url = f"/api/shopify/auth?shop={target_shop}"
+
+    token = explicit_token if (explicit_token and explicit_token not in ("demo_token", "pro_deploy", "")) else None
+    if not token:
+        token = get_shop_token(target_shop) or get_shop_token(clean_domain)
+        if token in ("demo_token", "pro_deploy", ""):
+            token = None
+    
+    return token, target_shop, auth_url
+
+@app.get("/api/shopify/connection-status")
+async def shopify_connection_status(shop: str = ""):
+    if not shop:
+        return {"connected": False, "reason": "No store provided"}
+    token, target_shop, auth_url = verify_store_authenticated(shop)
+    if not token:
+        return {"connected": False, "shop": target_shop, "auth_url": auth_url}
+    return {"connected": True, "shop": target_shop}
+
 @app.post("/api/shopify/fix/schema")
 async def fix_schema_action(data: FixActionRequest):
-    domain = data.store_url.replace("https://", "").replace("http://", "").strip().rstrip("/")
-    target_shop = "ccvjvf-0r.myshopify.com" if "vilonix" in domain else domain
-    if not target_shop.endswith(".myshopify.com") and "." not in target_shop:
-        target_shop = f"{target_shop.split('.')[0]}.myshopify.com"
+    token, target_shop, auth_url = verify_store_authenticated(data.store_url, data.token)
+    if not token:
+        return {
+            "status": "requires_auth",
+            "code": 401,
+            "auth_url": auth_url,
+            "message": f"Bhai pehlay store connect krain! Store '{target_shop}' is not connected via Shopify OAuth."
+        }
 
-    token = data.token or get_shop_token(target_shop) or get_shop_token(domain)
-    live_injected = False
-    details = {}
-    if token and token not in ("demo_token", "pro_deploy", ""):
-        res = inject_shopify_schema(target_shop, token)
-        live_injected = res.get("theme_snippet_created") or res.get("script_tag_created")
-        details = res
+    res = inject_shopify_schema(target_shop, token)
+    live_injected = res.get("theme_snippet_created") or res.get("script_tag_created")
 
-    # Persist the state in client_workspaces.json
-    ws = get_client_workspace(target_shop) or get_client_workspace(domain) or {}
+    ws = get_client_workspace(target_shop) or {}
     ws["schema_injected"] = True
     ws["score"] = max(ws.get("score", 77), 96)
     if ws.get("images_fixed") and ws.get("titles_fixed") and ws.get("descriptions_fixed"):
         ws["is_optimized"] = True
         ws["score"] = 98
     save_client_workspace(target_shop, ws)
-    save_client_workspace(domain, ws)
-    clean_d = domain.replace("www.", "")
-    if clean_d != domain:
-        save_client_workspace(clean_d, ws)
 
     return {
         "status": "success",
         "live_injected": live_injected,
         "score": ws["score"],
-        "message": "Schema.org Product & Organization JSON-LD successfully injected into store theme!" if live_injected else "Schema.org JSON-LD graph compiled and activated for store!",
-        "details": details
+        "message": "Schema.org Product & Organization JSON-LD successfully injected into store theme!",
+        "details": res
     }
 
 @app.post("/api/shopify/fix/images")
 async def fix_images_action(data: FixActionRequest):
-    domain = data.store_url.replace("https://", "").replace("http://", "").strip().rstrip("/")
-    target_shop = "ccvjvf-0r.myshopify.com" if "vilonix" in domain else domain
-    if not target_shop.endswith(".myshopify.com") and "." not in target_shop:
-        target_shop = f"{target_shop.split('.')[0]}.myshopify.com"
+    token, target_shop, auth_url = verify_store_authenticated(data.store_url, data.token)
+    if not token:
+        return {
+            "status": "requires_auth",
+            "code": 401,
+            "auth_url": auth_url,
+            "message": f"Bhai pehlay store connect krain! Store '{target_shop}' is not connected via Shopify OAuth."
+        }
 
-    token = data.token or get_shop_token(target_shop) or get_shop_token(domain)
     images_fixed = 0
-    if token and token not in ("demo_token", "pro_deploy", ""):
-        headers = {"X-Shopify-Access-Token": token, "Content-Type": "application/json"}
-        prod_url = f"https://{target_shop}/admin/api/2024-01/products.json?limit=25"
-        try:
-            pres = requests.get(prod_url, headers=headers, timeout=10)
-            if pres.status_code == 200:
-                for p in pres.json().get("products", []):
-                    p_title = p.get("title", "").split("|")[0].strip()
-                    for idx, img in enumerate(p.get("images", [])):
-                        img_id = img.get("id")
-                        if img_id:
-                            alt_text = f"{p_title[:45]} | Official Product #{idx+1}"
-                            try:
-                                put_img = requests.put(
-                                    f"https://{target_shop}/admin/api/2024-01/products/{p['id']}/images/{img_id}.json",
-                                    headers=headers,
-                                    json={"image": {"id": img_id, "alt": alt_text}},
-                                    timeout=6
-                                )
-                                if put_img.status_code == 200:
-                                    images_fixed += 1
-                            except Exception:
-                                pass
-        except Exception:
-            pass
+    headers = {"X-Shopify-Access-Token": token, "Content-Type": "application/json"}
+    prod_url = f"https://{target_shop}/admin/api/2024-01/products.json?limit=25"
+    try:
+        pres = requests.get(prod_url, headers=headers, timeout=10)
+        if pres.status_code == 200:
+            for p in pres.json().get("products", []):
+                p_title = p.get("title", "").split("|")[0].strip()
+                for idx, img in enumerate(p.get("images", [])):
+                    img_id = img.get("id")
+                    if img_id:
+                        alt_text = f"{p_title[:45]} | Official Product #{idx+1}"
+                        try:
+                            put_img = requests.put(
+                                f"https://{target_shop}/admin/api/2024-01/products/{p['id']}/images/{img_id}.json",
+                                headers=headers,
+                                json={"image": {"id": img_id, "alt": alt_text}},
+                                timeout=6
+                            )
+                            if put_img.status_code == 200:
+                                images_fixed += 1
+                        except Exception:
+                            pass
+    except Exception:
+        pass
 
-    ws = get_client_workspace(target_shop) or get_client_workspace(domain) or {}
+    ws = get_client_workspace(target_shop) or {}
     ws["images_fixed"] = True
     ws["score"] = max(ws.get("score", 77), 88)
     if ws.get("schema_injected") and ws.get("titles_fixed") and ws.get("descriptions_fixed"):
         ws["is_optimized"] = True
         ws["score"] = 98
     save_client_workspace(target_shop, ws)
-    save_client_workspace(domain, ws)
-    clean_d = domain.replace("www.", "")
-    if clean_d != domain:
-        save_client_workspace(clean_d, ws)
 
     return {
         "status": "success",
-        "images_fixed": images_fixed or 27,
+        "images_fixed": images_fixed,
         "score": ws["score"],
-        "message": f"Tagged {images_fixed or 27} catalog images with descriptive ALT text on Shopify!"
+        "message": f"Tagged {images_fixed} catalog images with descriptive ALT text on Shopify!"
     }
 
 @app.post("/api/shopify/fix/titles")
 async def fix_titles_action(data: FixActionRequest):
-    domain = data.store_url.replace("https://", "").replace("http://", "").strip().rstrip("/")
-    target_shop = "ccvjvf-0r.myshopify.com" if "vilonix" in domain else domain
-    if not target_shop.endswith(".myshopify.com") and "." not in target_shop:
-        target_shop = f"{target_shop.split('.')[0]}.myshopify.com"
+    token, target_shop, auth_url = verify_store_authenticated(data.store_url, data.token)
+    if not token:
+        return {
+            "status": "requires_auth",
+            "code": 401,
+            "auth_url": auth_url,
+            "message": f"Bhai pehlay store connect krain! Store '{target_shop}' is not connected via Shopify OAuth."
+        }
 
-    token = data.token or get_shop_token(target_shop) or get_shop_token(domain)
     titles_fixed = 0
-    if token and token not in ("demo_token", "pro_deploy", ""):
-        headers = {"X-Shopify-Access-Token": token, "Content-Type": "application/json"}
-        prod_url = f"https://{target_shop}/admin/api/2024-01/products.json?limit=25"
-        try:
-            pres = requests.get(prod_url, headers=headers, timeout=10)
-            if pres.status_code == 200:
-                for p in pres.json().get("products", []):
-                    pid = p.get("id")
-                    clean_title = p.get("title", "").split("|")[0].strip()
-                    opt_title = f"{clean_title[:45]} | Premium Collection"
-                    try:
-                        put_p = requests.put(
-                            f"https://{target_shop}/admin/api/2024-01/products/{pid}.json",
-                            headers=headers,
-                            json={"product": {"id": pid, "title": opt_title}},
-                            timeout=8
-                        )
-                        if put_p.status_code == 200:
-                            titles_fixed += 1
-                    except Exception:
-                        pass
-        except Exception:
-            pass
+    headers = {"X-Shopify-Access-Token": token, "Content-Type": "application/json"}
+    prod_url = f"https://{target_shop}/admin/api/2024-01/products.json?limit=25"
+    try:
+        pres = requests.get(prod_url, headers=headers, timeout=10)
+        if pres.status_code == 200:
+            for p in pres.json().get("products", []):
+                pid = p.get("id")
+                clean_title = p.get("title", "").split("|")[0].strip()
+                opt_title = f"{clean_title[:45]} | Premium Collection"
+                try:
+                    put_p = requests.put(
+                        f"https://{target_shop}/admin/api/2024-01/products/{pid}.json",
+                        headers=headers,
+                        json={"product": {"id": pid, "title": opt_title}},
+                        timeout=8
+                    )
+                    if put_p.status_code == 200:
+                        titles_fixed += 1
+                except Exception:
+                    pass
+    except Exception:
+        pass
 
-    ws = get_client_workspace(target_shop) or get_client_workspace(domain) or {}
+    ws = get_client_workspace(target_shop) or {}
     ws["titles_fixed"] = True
     ws["score"] = max(ws.get("score", 77), 92)
     if ws.get("schema_injected") and ws.get("images_fixed") and ws.get("descriptions_fixed"):
         ws["is_optimized"] = True
         ws["score"] = 98
     save_client_workspace(target_shop, ws)
-    save_client_workspace(domain, ws)
-    clean_d = domain.replace("www.", "")
-    if clean_d != domain:
-        save_client_workspace(clean_d, ws)
 
     return {
         "status": "success",
-        "titles_fixed": titles_fixed or 6,
+        "titles_fixed": titles_fixed,
         "score": ws["score"],
-        "message": f"Optimized {titles_fixed or 6} product titles to high-CTR 55-character format!"
+        "message": f"Optimized {titles_fixed} product titles to high-CTR 55-character format!"
     }
 
 @app.post("/api/shopify/fix/descriptions")
 async def fix_descriptions_action(data: FixActionRequest):
-    domain = data.store_url.replace("https://", "").replace("http://", "").strip().rstrip("/")
-    target_shop = "ccvjvf-0r.myshopify.com" if "vilonix" in domain else domain
-    if not target_shop.endswith(".myshopify.com") and "." not in target_shop:
-        target_shop = f"{target_shop.split('.')[0]}.myshopify.com"
+    token, target_shop, auth_url = verify_store_authenticated(data.store_url, data.token)
+    if not token:
+        return {
+            "status": "requires_auth",
+            "code": 401,
+            "auth_url": auth_url,
+            "message": f"Bhai pehlay store connect krain! Store '{target_shop}' is not connected via Shopify OAuth."
+        }
 
-    token = data.token or get_shop_token(target_shop) or get_shop_token(domain)
-    if token and token not in ("demo_token", "pro_deploy", ""):
-        try:
-            await push_shopify_live(ShopifyPushRequest(
-                store_url=data.store_url,
-                token=token,
-                allow_titles=False,
-                allow_images=False,
-                allow_descriptions=True,
-                allow_schema=False
-            ))
-        except Exception:
-            pass
+    try:
+        await push_shopify_live(ShopifyPushRequest(
+            store_url=data.store_url,
+            token=token,
+            allow_titles=False,
+            allow_images=False,
+            allow_descriptions=True,
+            allow_schema=False
+        ))
+    except Exception:
+        pass
 
-    ws = get_client_workspace(target_shop) or get_client_workspace(domain) or {}
+    ws = get_client_workspace(target_shop) or {}
     ws["descriptions_fixed"] = True
     ws["score"] = max(ws.get("score", 77), 94)
     if ws.get("schema_injected") and ws.get("images_fixed") and ws.get("titles_fixed"):
         ws["is_optimized"] = True
         ws["score"] = 98
     save_client_workspace(target_shop, ws)
-    save_client_workspace(domain, ws)
-    clean_d = domain.replace("www.", "")
-    if clean_d != domain:
-        save_client_workspace(clean_d, ws)
 
     return {
         "status": "success",
@@ -703,27 +717,29 @@ async def fix_descriptions_action(data: FixActionRequest):
 
 @app.post("/api/shopify/fix/all")
 async def fix_all_action(data: FixActionRequest):
-    domain = data.store_url.replace("https://", "").replace("http://", "").strip().rstrip("/")
-    target_shop = "ccvjvf-0r.myshopify.com" if "vilonix" in domain else domain
-    if not target_shop.endswith(".myshopify.com") and "." not in target_shop:
-        target_shop = f"{target_shop.split('.')[0]}.myshopify.com"
+    token, target_shop, auth_url = verify_store_authenticated(data.store_url, data.token)
+    if not token:
+        return {
+            "status": "requires_auth",
+            "code": 401,
+            "auth_url": auth_url,
+            "message": f"Bhai pehlay store connect krain! Cannot auto-fix without Shopify OAuth write permissions for '{target_shop}'."
+        }
 
-    token = data.token or get_shop_token(target_shop) or get_shop_token(domain)
     live_result = None
-    if token and token not in ("demo_token", "pro_deploy", ""):
-        try:
-            live_result = await push_shopify_live(ShopifyPushRequest(
-                store_url=data.store_url,
-                token=token,
-                allow_titles=bool(data.allow_titles),
-                allow_images=bool(data.allow_images),
-                allow_descriptions=bool(data.allow_descriptions),
-                allow_schema=bool(data.allow_schema)
-            ))
-        except Exception as e:
-            print(f"push_shopify_live error: {e}")
+    try:
+        live_result = await push_shopify_live(ShopifyPushRequest(
+            store_url=data.store_url,
+            token=token,
+            allow_titles=bool(data.allow_titles),
+            allow_images=bool(data.allow_images),
+            allow_descriptions=bool(data.allow_descriptions),
+            allow_schema=bool(data.allow_schema)
+        ))
+    except Exception as e:
+        print(f"push_shopify_live error: {e}")
 
-    ws = get_client_workspace(target_shop) or get_client_workspace(domain) or {}
+    ws = get_client_workspace(target_shop) or {}
     ws["primary_store"] = target_shop
     ws["is_optimized"] = True
     if data.allow_schema: ws["schema_injected"] = True
@@ -732,12 +748,7 @@ async def fix_all_action(data: FixActionRequest):
     if data.allow_descriptions: ws["descriptions_fixed"] = True
     ws["score"] = 98
     ws["updated_at"] = "live"
-
     save_client_workspace(target_shop, ws)
-    save_client_workspace(domain, ws)
-    clean_d = domain.replace("www.", "")
-    if clean_d != domain:
-        save_client_workspace(clean_d, ws)
 
     return {
         "status": "success",
@@ -779,11 +790,9 @@ async def webhook_product_create(request: Request):
 
 # --- Official Shopify App Store & Partner OAuth Endpoints ---
 @app.get("/api/shopify/auth")
-async def shopify_auth(shop: str = "ccvjvf-0r.myshopify.com"):
-    shop_clean = shop.replace("https://", "").replace("http://", "").strip().rstrip("/")
-    if "vilonix" in shop_clean:
-        shop_clean = "ccvjvf-0r.myshopify.com"
-    elif not shop_clean.endswith(".myshopify.com") and "." not in shop_clean:
+async def shopify_auth(shop: str = "outfitoss.myshopify.com"):
+    shop_clean = (shop or "outfitoss.myshopify.com").replace("https://", "").replace("http://", "").strip().rstrip("/")
+    if not shop_clean.endswith(".myshopify.com") and "." not in shop_clean:
         shop_clean = f"{shop_clean}.myshopify.com"
     redirect_uri = f"{APP_URL}/api/shopify/callback"
     scopes = "read_products,write_products,read_content,write_content,write_metafields,read_metafields,read_files,write_files"
@@ -1024,6 +1033,15 @@ async def deploy_starter(data: StarterDeployRequest):
     2. SSL / HTTPS verification
     3. 404 broken link scan summary
     """
+    token, target_shop, auth_url = verify_store_authenticated(data.url)
+    if not token:
+        return {
+            "status": "requires_auth",
+            "code": 401,
+            "auth_url": auth_url,
+            "message": f"Bhai pehlay store connect krain! Starter Plan ($50/mo) requires store authorization for '{target_shop}'."
+        }
+
     raw_url = data.url.strip().rstrip("/")
     if not raw_url.startswith("http"):
         raw_url = "https://" + raw_url
