@@ -4,6 +4,8 @@ Analyzes any website URL in real-time for Technical & On-Page SEO issues.
 Returns structured JSON with SEO health score, passed checks, and critical fixes needed.
 """
 
+import os
+import json
 import time
 import re
 from urllib.parse import urlparse, urljoin
@@ -29,22 +31,12 @@ def audit_website(url: str) -> dict:
     parsed = urlparse(url)
     domain = parsed.netloc
 
-    # Check if RankSleep has already optimized this store
+    # Real-time inspection state (genuine store diagnostics)
     is_store_optimized = False
-    try:
-        import os
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        ws_file = os.path.join(base_dir, "client_workspaces.json")
-        if os.path.exists(ws_file):
-            with open(ws_file, "r", encoding="utf-8") as f:
-                ws_data = json.load(f)
-                clean_d = domain.replace("www.", "")
-                if clean_d in ws_data and ws_data[clean_d].get("is_optimized"):
-                    is_store_optimized = True
-                elif "vilonix.shop" in ws_data and ws_data["vilonix.shop"].get("is_optimized") and "vilonix" in clean_d:
-                    is_store_optimized = True
-    except Exception:
-        pass
+    has_images_fixed = False
+    has_schema_injected = False
+    has_titles_fixed = False
+    has_descriptions_fixed = False
 
     results = {
         "url": url,
@@ -169,12 +161,14 @@ def audit_website(url: str) -> dict:
     # Check if AutoSEO dynamic image alt injector is present in HTML
     has_autoseo_alt_injector = "AutoSEO Pro Dynamic Image Alt" in html or ("querySelectorAll" in html and "alt" in html and "AutoSEO" in html)
 
-    if len(missing_alt) > 0:
+    if len(missing_alt) > 0 and not has_images_fixed:
         penalty = min(15, len(missing_alt) * 3)
         results["score"] -= penalty
         results["critical_issues"].append(
             f"Image SEO Missing: {len(missing_alt)} of {total_images} images on this page are missing descriptive Alt-tags."
         )
+    elif has_images_fixed:
+        results["passed_checks"].append(f"Image SEO: All {total_images} images protected with descriptive Alt-tags by RankSleep Vision AI.")
     elif has_autoseo_alt_injector:
         results["passed_checks"].append("AutoSEO Pro Image Optimizer active: Alt-tags dynamically protected.")
     elif total_images > 0:
@@ -182,12 +176,12 @@ def audit_website(url: str) -> dict:
 
     # 8. Schema Markup / Structured Data (JSON-LD)
     schemas = soup.find_all("script", attrs={"type": "application/ld+json"})
-    results["details"]["schema_count"] = len(schemas)
-    if len(schemas) == 0:
+    results["details"]["schema_count"] = max(len(schemas), 1 if has_schema_injected else 0)
+    if len(schemas) == 0 and not has_schema_injected:
         results["score"] -= 15
         results["critical_issues"].append("Schema Markup Missing: No JSON-LD structured data found. Google cannot show rich snippets, stars, or business details.")
     else:
-        results["passed_checks"].append(f"Structured Data found ({len(schemas)} Schema JSON-LD blocks).")
+        results["passed_checks"].append(f"Structured Data found ({results['details']['schema_count']} Schema JSON-LD blocks).")
 
     # 9. Mobile Viewport Check
     viewport = soup.find("meta", attrs={"name": "viewport"})
@@ -252,11 +246,7 @@ def audit_website(url: str) -> dict:
                     elif len(p_title) < 20:
                         p_issues.append("Title too short")
                     
-                    if is_store_optimized:
-                        p_issues = []
-                        p_has_issues = False
-                    else:
-                        p_has_issues = len(p_issues) > 0
+                    p_has_issues = len(p_issues) > 0
 
                     analyzed_products.append({
                         "id": p.get("id"),
@@ -264,7 +254,7 @@ def audit_website(url: str) -> dict:
                         "handle": p.get("handle"),
                         "clean_desc": clean_body[:90] + ("..." if len(clean_body) > 90 else ""),
                         "desc_len": len(clean_body),
-                        "missing_alts": 0 if is_store_optimized else p_missing_alts,
+                        "missing_alts": p_missing_alts,
                         "issues": p_issues,
                         "has_issues": p_has_issues
                     })
@@ -272,39 +262,39 @@ def audit_website(url: str) -> dict:
                 results["details"]["products_catalog"] = analyzed_products
                 results["details"]["catalog_scanned_count"] = len(analyzed_products)
 
-                # Penalties for Catalog Defects (bypassed if store is actively optimized by RankSleep)
-                if is_store_optimized:
-                    results["passed_checks"].append(f"Product Catalog Image SEO: All {total_catalog_imgs} images protected with descriptive Alt-tags by RankSleep AI.")
-                    results["passed_checks"].append("Product Descriptions: Rewritten & protected by RankSleep AI Gemini Engine.")
-                    results["passed_checks"].append("Title Tags: 55-char optimal High-CTR search format active.")
-                    results["score"] = max(results["score"], 96)
-                else:
-                    if thin_products:
-                        penalty = min(25, len(thin_products) * 10)
-                        results["score"] -= penalty
-                        sample_name = thin_products[0][0]
-                        sample_len = thin_products[0][1]
-                        results["critical_issues"].append(
-                            f"Thin Product Descriptions: Found {len(thin_products)} product(s) with incomplete/thin descriptions (e.g. '{sample_name[:38]}...' has only {sample_len} chars). Google Panda algorithm penalizes thin product pages!"
-                        )
+                # Penalties for Catalog Defects
+                if missing_catalog_alts > 0:
+                    penalty = min(20, missing_catalog_alts * 2)
+                    results["score"] -= penalty
+                    results["critical_issues"].append(
+                        f"Product Catalog Image SEO: {missing_catalog_alts} of {total_catalog_imgs} product images are missing descriptive Alt-tags. Google Images cannot index these products."
+                    )
 
-                    if missing_catalog_alts > 0:
-                        penalty = min(20, missing_catalog_alts * 2)
-                        results["score"] -= penalty
-                        results["critical_issues"].append(
-                            f"Product Catalog Image SEO: {missing_catalog_alts} of {total_catalog_imgs} product images are missing descriptive Alt-tags. Google Images cannot index these products."
-                        )
+                if thin_products:
+                    penalty = min(25, len(thin_products) * 10)
+                    results["score"] -= penalty
+                    sample_name = thin_products[0][0]
+                    sample_len = thin_products[0][1]
+                    results["critical_issues"].append(
+                        f"Thin Product Descriptions: Found {len(thin_products)} product(s) with incomplete/thin descriptions (e.g. '{sample_name[:38]}...' has only {sample_len} chars). Google Panda algorithm penalizes thin product pages!"
+                    )
 
-                    if truncated_titles:
-                        penalty = min(15, len(truncated_titles) * 3)
-                        results["score"] -= penalty
-                        results["warnings"].append(
-                            f"Product Titles Exceeding Display Limit: {len(truncated_titles)} products have titles over 70 characters that will be cut off with '...' in Google search."
-                        )
+                if truncated_titles:
+                    penalty = min(15, len(truncated_titles) * 3)
+                    results["score"] -= penalty
+                    results["warnings"].append(
+                        f"Product Titles Exceeding Display Limit: {len(truncated_titles)} products have titles over 70 characters that will be cut off with '...' in Google search."
+                    )
     except Exception:
         pass
 
-    # Clamp score between 10 and 100
+    results["details"]["is_optimized"] = False
+    results["details"]["schema_injected"] = False
+    results["details"]["images_fixed"] = False
+    results["details"]["titles_fixed"] = False
+    results["details"]["descriptions_fixed"] = False
+
+    # Clamp score between 15 and 100
     results["score"] = max(15, min(100, results["score"]))
     return results
 
