@@ -33,8 +33,8 @@ TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 PLUGIN_ZIP_PATH = os.path.join(BASE_DIR, "instant-seo-agent.zip")
 STORES_FILE = os.path.join(BASE_DIR, "shopify_stores.json")
-SHOPIFY_CLIENT_ID = os.environ.get("SHOPIFY_CLIENT_ID", "b8201241fc7d803d8d8c2f1233035a07")
-SHOPIFY_CLIENT_SECRET = os.environ.get("SHOPIFY_CLIENT_SECRET", "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")
+SHOPIFY_CLIENT_ID = os.environ.get("SHOPIFY_CLIENT_ID", "73bfd247bf57cf8ad82c615c293076e5")
+SHOPIFY_CLIENT_SECRET = os.environ.get("SHOPIFY_CLIENT_SECRET", "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")
 APP_URL = os.environ.get("APP_URL", "https://ranksleepseo.com")
 
 import json
