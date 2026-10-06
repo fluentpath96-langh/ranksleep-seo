@@ -1,0 +1,16 @@
+{
+  "user_visithere045@gmail.com": {
+    "email": "visithere045@gmail.com",
+    "name": "Visithere",
+    "picture": "https://lh3.googleusercontent.com/a/ACg8ocLq-i87fkHmL3AD9nYP9VHc6He4SqaIAHBtNRk0zMIn7ozM_w=s96-c",
+    "provider": "google",
+    "logged_in_at": "live"
+  },
+  "user_badamishan24@gmail.com": {
+    "email": "badamishan24@gmail.com",
+    "name": "Badami",
+    "picture": "https://lh3.googleusercontent.com/a/ACg8ocLqDkooJDnrkIh9HYihZbdqfMbACbbnMymZN-4cobYqOp5e=s96-c",
+    "provider": "google",
+    "logged_in_at": "live"
+  }
+}
