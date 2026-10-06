@@ -692,6 +692,10 @@ Rich Snippets
         rawUrl = savedStore || 'outfitoss.myshopify.com';
         if (urlInput) urlInput.value = rawUrl;
       }
+      if (rawUrl.includes('mrvdjm-ea')) {
+        rawUrl = 'outfitoss.myshopify.com';
+        if (urlInput) urlInput.value = rawUrl;
+      }
       if (!rawUrl.startsWith('http://') && !rawUrl.startsWith('https://')) {
         rawUrl = 'https://' + rawUrl;
       }
@@ -1701,10 +1705,13 @@ Rich Snippets
       if (targetShop && targetShop.includes('ccvjvf-0r')) {
         targetShop = null;
       }
+      if (targetShop && targetShop.includes('mrvdjm-ea')) {
+        targetShop = 'outfitoss.myshopify.com';
+      }
       
       // Only set search bar if explicitly requested via valid URL param
       if (targetShop) {
-        const cleanStore = targetShop.replace('.myshopify.com', '.shop').replace('https://', '').replace('http://', '').replace('www.', '').trim();
+        const cleanStore = targetShop.replace('https://', '').replace('http://', '').replace('www.', '').trim();
         const urlInput = document.getElementById('storeUrlInput');
         if (urlInput) urlInput.value = cleanStore;
         currentStoreUrl = cleanStore;
@@ -1714,7 +1721,7 @@ Rich Snippets
 
         // Auto-scan if installed query param present
         if (urlParams.get('installed') === 'true') {
-          appendTerminalLog(`Shopify App installed successfully with OAuth write permissions!`, 'OK');
+          appendTerminalLog(`Shopify App installed successfully with OAuth write permissions for ${cleanStore}!`, 'OK');
           triggerStoreScan();
         } else {
           appendTerminalLog(`Target store loaded: ${cleanStore}. Click "Scan Free" to audit catalog.`, 'SYS');
