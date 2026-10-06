@@ -233,19 +233,23 @@ def audit_website(url: str) -> dict:
                     total_catalog_imgs += len(p_imgs)
                     missing_catalog_alts += p_missing_alts
 
+                    word_count = len(clean_body.split())
                     p_issues = []
-                    # Thin description check (less than 100 characters is incomplete / adhi-adhuri)
-                    if len(clean_body) < 100:
+                    # Thin description check (<25 words or <100 chars)
+                    if word_count < 25 or len(clean_body) < 100:
                         thin_products.append((p_title, len(clean_body)))
-                        p_issues.append(f"Thin / Incomplete Description ({len(clean_body)} chars)")
+                        p_issues.append(f"Thin Copy ({word_count}w)")
                     
-                    # Title truncation check
-                    if len(p_title) > 70:
+                    # Title truncation check (>60 chars)
+                    if len(p_title) > 60:
                         truncated_titles.append((p_title, len(p_title)))
-                        p_issues.append(f"Title Truncated by Google ({len(p_title)} chars)")
+                        p_issues.append(f"Title Truncated ({len(p_title)} chars)")
                     elif len(p_title) < 20:
-                        p_issues.append("Title too short")
+                        p_issues.append(f"Title Short ({len(p_title)} chars)")
                     
+                    if p_missing_alts > 0:
+                        p_issues.append(f"{p_missing_alts} Missing Alt-Tags")
+
                     p_has_issues = len(p_issues) > 0
 
                     analyzed_products.append({
@@ -254,6 +258,8 @@ def audit_website(url: str) -> dict:
                         "handle": p.get("handle"),
                         "clean_desc": clean_body[:90] + ("..." if len(clean_body) > 90 else ""),
                         "desc_len": len(clean_body),
+                        "desc_words": word_count,
+                        "total_images": len(p_imgs),
                         "missing_alts": p_missing_alts,
                         "issues": p_issues,
                         "has_issues": p_has_issues
@@ -261,6 +267,10 @@ def audit_website(url: str) -> dict:
 
                 results["details"]["products_catalog"] = analyzed_products
                 results["details"]["catalog_scanned_count"] = len(analyzed_products)
+                results["details"]["thin_count"] = len(thin_products)
+                results["details"]["truncated_titles_count"] = len(truncated_titles)
+                results["details"]["missing_alts_count"] = missing_catalog_alts
+                results["details"]["deficit_products_count"] = sum(1 for p in analyzed_products if p["has_issues"])
 
                 # Penalties for Catalog Defects
                 if missing_catalog_alts > 0:

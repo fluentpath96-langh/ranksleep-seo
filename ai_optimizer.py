@@ -208,6 +208,186 @@ Return a RAW JSON list where each object has:
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
+def classify_product_niche(title: str, body: str = "") -> str:
+    """Accurately classifies e-commerce products into specific niches."""
+    text = f"{title} {body}".lower()
+    if any(k in text for k in ["noodle", "spice", "ginger", "chatpatta", "tea", "coffee", "snack", "sauce", "honey", "powder", "food", "pasta", "cookie", "rice", "curry", "masala"]):
+        return "food"
+    if any(k in text for k in ["baby", "hooded", "towel", "infant", "toddler", "swaddle", "newborn", "diaper", "kid", "child", "bath"]):
+        return "baby"
+    if any(k in text for k in ["cleanser", "toner", "micellar", "serum", "lotion", "skincare", "beauty", "cosmetic", "face", "makeup", "eracos", "cream", "moisturiz"]):
+        return "beauty"
+    if any(k in text for k in ["faucet", "heater", "tap", "sink", "instant heating", "water heater", "hardware", "plumbing", "tool"]):
+        return "home_hardware"
+    if any(k in text for k in ["dress", "shirt", "pant", "hoodie", "jacket", "shoe", "sneaker", "bag", "cloth", "wear", "tee", "denim", "towel"]):
+        return "apparel"
+    return "general"
+
+def _get_niche_highlights_html(niche: str, title: str, shop_name: str) -> str:
+    """Returns niche-specific bullet points for key highlights."""
+    if niche == "food":
+        return """<ul style="list-style-type: disc; padding-left: 1.25rem;">
+  <li><strong>Authentic Rich Flavor:</strong> Crafted with signature seasoning for unmatched taste and satisfaction.</li>
+  <li><strong>Quick & Easy Preparation:</strong> Ready in minutes, perfect for fast daily meals and quick snacks.</li>
+  <li><strong>Quality Guaranteed Freshness:</strong> Sealed packaging ensuring optimal aroma, hygiene, and freshness.</li>
+</ul>"""
+    elif niche == "baby":
+        return """<ul style="list-style-type: disc; padding-left: 1.25rem;">
+  <li><strong>Ultra-Soft & Hypoallergenic:</strong> Gentle on sensitive newborn skin with zero harsh irritants.</li>
+  <li><strong>High Absorbency & Quick-Drying:</strong> Efficient moisture absorption keeping your little one warm and dry.</li>
+  <li><strong>Durable Child-Safe Quality:</strong> Machine washable and engineered to retain plush softness wash after wash.</li>
+</ul>"""
+    elif niche == "beauty":
+        return """<ul style="list-style-type: disc; padding-left: 1.25rem;">
+  <li><strong>Deep Cleansing & Hydration:</strong> Effectively clears impurities while preserving essential skin moisture.</li>
+  <li><strong>Gentle on All Skin Types:</strong> Mild, non-irritating formula formulated for smooth daily nourishment.</li>
+  <li><strong>Radiant Natural Complexion:</strong> Promotes refreshed, glowing skin with regular everyday use.</li>
+</ul>"""
+    elif niche == "home_hardware":
+        return """<ul style="list-style-type: disc; padding-left: 1.25rem;">
+  <li><strong>Rapid Efficient Performance:</strong> Engineered for fast response, saving valuable daily time and energy.</li>
+  <li><strong>Corrosion-Resistant Durability:</strong> Premium leak-resistant build quality designed for long-term reliability.</li>
+  <li><strong>Simple Plug-and-Play Setup:</strong> Intuitive design allowing straightforward mounting and operation.</li>
+</ul>"""
+    elif niche == "apparel":
+        return """<ul style="list-style-type: disc; padding-left: 1.25rem;">
+  <li><strong>Premium Breathable Fabric:</strong> Lightweight, soft-touch fabric delivering superior all-day comfort.</li>
+  <li><strong>Tailored Contemporary Fit:</strong> Designed for an elegant silhouette and effortless mobility.</li>
+  <li><strong>Color & Shape Retention:</strong> Reinforced stitching maintaining vibrant look wash after wash.</li>
+</ul>"""
+    else:
+        return f"""<ul style="list-style-type: disc; padding-left: 1.25rem;">
+  <li><strong>Premium Build Quality:</strong> Thoughtfully engineered for reliability and superior everyday utility.</li>
+  <li><strong>100% Quality Guaranteed:</strong> Backed by {shop_name}'s authentic satisfaction guarantee.</li>
+  <li><strong>Fast Tracked Delivery:</strong> Secure packaging with priority dispatch straight to your doorstep.</li>
+</ul>"""
+
+def _generate_niche_heuristic_copy(niche: str, title: str, shop_name: str, length_pref: str = "standard") -> str:
+    """Generates authentic category-aware product copy."""
+    clean_title = title.split("|")[0].strip()
+    if niche == "food":
+        body = (
+            f"<p>Satisfy your cravings with the authentic, mouth-watering {clean_title} from {shop_name}. "
+            f"Prepared with carefully selected ingredients and crafted for rich flavor, this instant favorite delivers delicious taste, quick preparation, and comforting satisfaction whenever hunger strikes. "
+            f"Enjoy sealed freshness, balanced seasoning, and easy cooking for you and your family.</p>"
+        )
+    elif niche == "baby":
+        body = (
+            f"<p>Wrap your little one in pure comfort with the {clean_title} from {shop_name}. "
+            f"Thoughtfully crafted from ultra-soft, breathable fabrics, this piece is designed to be gentle on sensitive baby skin while providing cozy warmth and soothing security after bath time or daily rest. "
+            f"Enjoy peace of mind with hypoallergenic materials made for delicate comfort.</p>"
+        )
+    elif niche == "beauty":
+        body = (
+            f"<p>Elevate your daily skincare ritual with the {clean_title} from {shop_name}. "
+            f"Formulated to deliver deep hydration and gentle daily care, this refreshing solution purifies, restores natural skin balance, and promotes a smooth, radiant glow without stripping moisture. "
+            f"Gentle enough for everyday use and suitable for all skin types.</p>"
+        )
+    elif niche == "home_hardware":
+        body = (
+            f"<p>Upgrade your household utility and convenience with the {clean_title} from {shop_name}. "
+            f"Engineered for rapid performance and modern efficiency, this unit provides instant temperature control, reliable water flow, and a sleek contemporary design that complements modern sinks and kitchens. "
+            f"Durable construction ensures dependable daily performance.</p>"
+        )
+    elif niche == "apparel":
+        body = (
+            f"<p>Discover effortless style and all-day comfort with the {clean_title} from {shop_name}. "
+            f"Tailored with premium breathable fabrics, this piece delivers a flattering contemporary fit, versatile styling options, and premium finishing suited for both relaxed casual wear and special outings. "
+            f"Designed to keep you looking sharp and feeling comfortable.</p>"
+        )
+    else:
+        body = (
+            f"<p>Experience premium craftsmanship and everyday performance with the {clean_title} from {shop_name}. "
+            f"Carefully crafted to meet the highest standards of reliability and style, this piece delivers dependable satisfaction, modern aesthetic appeal, and long-lasting value for your lifestyle.</p>"
+        )
+
+    highlights = _get_niche_highlights_html(niche, clean_title, shop_name)
+    return (
+        f"{body}"
+        f"<div class='ranksleep-highlights' style='margin-top: 1rem;'>"
+        f"<h4 style='font-size: 1.05rem; font-weight: 600; margin-bottom: 0.5rem;'>Key Highlights &amp; Benefits:</h4>"
+        f"{highlights}"
+        f"<p style='margin-top: 0.75rem;'>Shop with confidence at {shop_name} — enjoy premium customer care and guaranteed satisfaction today!</p>"
+        f"</div>"
+    )
+
+def generate_smart_product_copy(title: str, existing_body: str = "", shop_name: str = "Store", length_pref: str = "standard", preserve_existing: bool = True) -> str:
+    """
+    Intelligent product description generator:
+    1. Preserves merchant's existing rich copy (>85 words) if preserve_existing is True, appending niche highlights.
+    2. Uses real Google Gemini AI for customized, niche-perfect e-commerce copy.
+    3. Category-aware fallback prevents food/apparel/hardware mixups even if offline.
+    """
+    clean_title = title.split("|")[0].strip() if "|" in title else title.strip()
+    clean_body = re.sub(r'<[^<]+?>', '', existing_body or "").strip()
+    word_count = len(clean_body.split())
+    niche = classify_product_niche(clean_title, clean_body)
+
+    # 1. Preserve existing rich descriptions (>85 words)
+    if preserve_existing and word_count >= 85:
+        if "Key Highlights" in existing_body or "Highlights &amp; Benefits" in existing_body:
+            return existing_body
+        highlights = _get_niche_highlights_html(niche, clean_title, shop_name)
+        return (
+            f"{existing_body}"
+            f"<div class='ranksleep-highlights' style='margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e5e7eb;'>"
+            f"<h4 style='font-size: 1.05rem; font-weight: 600; margin-bottom: 0.5rem;'>Key Highlights &amp; Benefits:</h4>"
+            f"{highlights}"
+            f"<p style='margin-top: 0.5rem;'>Shop with confidence at {shop_name} — enjoy premium customer care today!</p>"
+            f"</div>"
+        )
+
+    # 2. Real Google Gemini AI Generation
+    word_target = "90 to 120 words" if length_pref == "concise" else ("240 to 300 words" if length_pref == "detailed" else "150 to 180 words")
+    if GEMINI_API_KEY:
+        try:
+            niche_label = niche.replace('_', ' ').title()
+            prompt = f"""You are an elite E-Commerce SEO Copywriter.
+Write an engaging, high-converting product description for:
+Product Title: {clean_title}
+Product Category: {niche_label}
+Store Name: {shop_name}
+Target Length: Approximately {word_target}
+Current Context: {clean_body[:400] if clean_body else 'None'}
+
+STRICT PRODUCT RELEVANCE RULES:
+- If Food/Snacks/Grocery: Focus 100% on delicious taste, bold spices/flavor, mouth-watering aroma, quick easy cooking, sealed freshness, and family satisfaction. NEVER use mechanical/hardware words like 'durable materials', 'precision engineering', 'build quality', or 'ergonomic'!
+- If Baby Products: Focus on ultra-soft fabrics, gentle touch for delicate newborn skin, hypoallergenic safety, comfort and warmth.
+- If Skincare/Cosmetics: Focus on hydration, glowing complexion, gentle cleansing, nourishing ingredients, and daily skincare confidence.
+- If Hardware/Appliances: Focus on fast efficiency, reliable heating/flow, durable corrosion-resistant materials, and modern utility.
+- If Apparel/Fashion: Focus on breathable fabric, modern tailored fit, versatile styling, and all-day comfort.
+
+STRUCTURE:
+1. Engaging opening paragraph (approx 50-80 words) highlighting benefits and appeal.
+2. An HTML block for highlights:
+   <div class='ranksleep-highlights' style='margin-top: 1rem;'>
+     <h4 style='font-size: 1.05rem; font-weight: 600; margin-bottom: 0.5rem;'>Key Highlights &amp; Benefits:</h4>
+     <ul style='list-style-type: disc; padding-left: 1.25rem;'>
+       <li><strong>...:</strong> ...</li>
+       <li><strong>...:</strong> ...</li>
+       <li><strong>...:</strong> ...</li>
+     </ul>
+     <p style='margin-top: 0.75rem;'>Shop authentic products with guaranteed satisfaction at {shop_name}!</p>
+   </div>
+Output ONLY clean HTML with no markdown code fences or backticks.
+"""
+            ai_text = _call_gemini_llm(prompt)
+            if ai_text and len(ai_text.strip()) > 80:
+                clean_ai = re.sub(r'^```html\s*', '', ai_text.strip(), flags=re.IGNORECASE)
+                clean_ai = re.sub(r'^```\s*', '', clean_ai)
+                clean_ai = re.sub(r'\s*```$', '', clean_ai)
+                # Verify sanity for food niche
+                if niche == "food" and any(bad in clean_ai.lower() for bad in ["precision engineering", "durable materials", "build quality"]):
+                    pass  # Fall through to category heuristic
+                else:
+                    return clean_ai
+        except Exception as e:
+            print(f"[Gemini Copy Generation Error] {e}")
+
+    # 3. Authentic Category-Aware Heuristic Fallback
+    return _generate_niche_heuristic_copy(niche, clean_title, shop_name, length_pref)
+
+
 if __name__ == "__main__":
     res = generate_seo_optimizations("https://vilonix.shop", "Vilonix Store", "Trendy apparel and fashion goods")
     print("Engine:", res.get("engine"))
