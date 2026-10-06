@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fffbeb" />
+      <stop offset="30%" stop-color="#fef3c7" />
+      <stop offset="65%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#b45309" />
+    </linearGradient>
+    <radialGradient id="crystalGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fef3c7" stop-opacity="0.8" />
+      <stop offset="60%" stop-color="#f59e0b" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1c1917" />
+      <stop offset="100%" stop-color="#0c0a09" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Rounded Base Icon Background -->
+  <rect width="64" height="64" rx="16" fill="url(#bgGrad)" stroke="#f59e0b" stroke-width="1.5" stroke-opacity="0.35" />
+  <circle cx="32" cy="32" r="24" fill="url(#crystalGlow)" />
+  
+  <!-- Luxury Crescent Moon -->
+  <path d="M38 16 C30 18 24 24 24 33 C24 42 31 48 40 48 C42 48 44 47.5 46 47 C43 51 37 54 31 54 C19 54 10 45 10 33 C10 21 19 12 31 12 C33.5 12 36 13 38 16 Z" fill="url(#goldGrad)" />
+  
+  <!-- Sparkling Crystal Diamond Stars -->
+  <path d="M44 20 L46 25 L51 27 L46 29 L44 34 L42 29 L37 27 L42 25 Z" fill="#ffffff" opacity="0.95" />
+  <circle cx="49" cy="40" r="1.5" fill="#fef3c7" />
+</svg>
