@@ -374,23 +374,91 @@ Rich Snippets
 <!-- Product Catalog Inspection Table -->
 <section class="max-w-7xl mx-auto w-full px-margin mb-space-xl">
 <div class="bg-surface-container rounded-xl overflow-hidden shadow-2xl">
-<!-- Table Header Bar -->
-<div class="p-space-lg bg-surface-container-high border-b border-surface-variant/30 flex flex-col md:flex-row md:items-center justify-between gap-space-md">
-<div>
-<div class="flex items-center gap-2">
-<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Live Catalog Inspection: Detected Store Products</h3>
-<span class="px-2 py-0.5 rounded text-xs bg-surface-variant text-on-surface font-mono" id="catalogStoreBadge">Awaiting Store URL</span>
-</div>
-<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Review granular optimization status and execute isolated AI enhancements per SKU.</p>
-</div>
-<!-- Filter Pills -->
-<div class="flex flex-wrap items-center gap-1.5">
-<button class="catalog-filter-btn px-space-sm py-1 rounded-full text-label-sm font-label-sm bg-primary-container text-on-primary-container font-semibold transition-all" id="filterBtnAll" onclick="filterCatalog('all', this)">All SKUs</button>
-<button class="catalog-filter-btn px-space-sm py-1 rounded-full text-label-sm font-label-sm bg-surface-variant text-on-surface-variant hover:text-on-surface transition-all" id="filterBtnAlt" onclick="filterCatalog('alt', this)">Needs Alt-Tags</button>
-<button class="catalog-filter-btn px-space-sm py-1 rounded-full text-label-sm font-label-sm bg-surface-variant text-on-surface-variant hover:text-on-surface transition-all" id="filterBtnThin" onclick="filterCatalog('thin', this)">Thin Copy</button>
-<button class="catalog-filter-btn px-space-sm py-1 rounded-full text-label-sm font-label-sm bg-surface-variant text-on-surface-variant hover:text-on-surface transition-all" id="filterBtnSchema" onclick="filterCatalog('schema', this)">Schema Missing</button>
-<button class="catalog-filter-btn px-space-sm py-1 rounded-full text-label-sm font-label-sm bg-surface-variant text-on-surface-variant hover:text-on-surface transition-all" id="filterBtnOptimized" onclick="filterCatalog('optimized', this)">Optimized</button>
-</div>
+<!-- Table Header Bar & AI Catalog Diagnostic -->
+<div class="p-space-md md:p-space-lg bg-surface-container-high border-b border-surface-variant/30">
+  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/20 text-primary font-bold text-xs uppercase tracking-wider">
+          <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> AI Catalog Diagnostic
+        </span>
+        <span class="px-2 py-0.5 rounded text-xs bg-surface-variant text-on-surface font-mono" id="catalogStoreBadge">Awaiting Store URL</span>
+      </div>
+      <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold mt-1.5">Smart Catalog Triage &amp; Niche AI Optimizer</h3>
+      <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5" id="catalogDiagnosticSummary">
+        Scans catalog items for thin descriptions, truncated titles, and missing image alt-tags. Select length preferences and 1-Click Optimize.
+      </p>
+    </div>
+    <!-- Quick Action Bar -->
+    <div class="flex flex-wrap items-center gap-2 shrink-0">
+      <button id="btnAutoFixDeficits" class="px-space-md py-2 bg-gradient-to-r from-primary to-primary-container text-on-primary font-label-md text-label-md font-bold rounded-lg shadow-[0_4px_16px_rgba(245,158,11,0.3)] hover:brightness-110 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer" onclick="optimizeAllDeficitProducts(this)">
+        <span class="material-symbols-outlined text-sm">bolt</span>
+        <span id="btnAutoFixDeficitsText">⚡ Auto-Fix All Deficit Products</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Diagnostic Metrics Strip -->
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 mt-space-md pt-space-md border-t border-surface-variant/20 text-center font-mono text-xs">
+    <div class="p-2 rounded bg-surface-container-low border border-surface-variant/30">
+      <div class="text-outline uppercase text-[10px] tracking-wider font-sans">Total Scanned</div>
+      <div class="font-bold text-sm text-on-surface mt-0.5" id="diagTotalScanned">0</div>
+    </div>
+    <div class="p-2 rounded bg-error-container/10 border border-error-container/30">
+      <div class="text-error uppercase text-[10px] tracking-wider font-sans">🚨 Urgent Fixes</div>
+      <div class="font-bold text-sm text-error mt-0.5" id="diagUrgentFixes">0</div>
+    </div>
+    <div class="p-2 rounded bg-surface-container-low border border-surface-variant/30">
+      <div class="text-tertiary-container uppercase text-[10px] tracking-wider font-sans">📝 Thin Copy</div>
+      <div class="font-bold text-sm text-tertiary mt-0.5" id="diagThinCopy">0</div>
+    </div>
+    <div class="p-2 rounded bg-surface-container-low border border-surface-variant/30">
+      <div class="text-outline uppercase text-[10px] tracking-wider font-sans">✂️ Long Titles</div>
+      <div class="font-bold text-sm text-on-surface mt-0.5" id="diagTruncTitles">0</div>
+    </div>
+    <div class="p-2 rounded bg-surface-container-low border border-surface-variant/30">
+      <div class="text-outline uppercase text-[10px] tracking-wider font-sans">🖼️ Missing Alt</div>
+      <div class="font-bold text-sm text-primary mt-0.5" id="diagMissingAlts">0</div>
+    </div>
+    <div class="p-2 rounded bg-secondary/10 border border-secondary/30">
+      <div class="text-secondary uppercase text-[10px] tracking-wider font-sans">✅ Optimized</div>
+      <div class="font-bold text-sm text-secondary mt-0.5" id="diagOptimizedCount">0</div>
+    </div>
+  </div>
+
+  <!-- Merchant Controls Bar (Length & Safety) -->
+  <div class="mt-space-md p-3 rounded-lg bg-surface-container-low border border-surface-variant/30 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+    <div class="flex flex-wrap items-center gap-3">
+      <div class="flex items-center gap-2">
+        <label for="descLengthSelect" class="font-semibold text-on-surface flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm text-primary">format_align_left</span> Target Copy Length:
+        </label>
+        <select id="descLengthSelect" class="px-2.5 py-1 rounded bg-surface-container border border-surface-variant/40 text-on-surface font-medium focus:ring-1 focus:ring-primary outline-none cursor-pointer">
+          <option value="standard" selected>Standard (150–180 Words) [Recommended]</option>
+          <option value="concise">Concise (90–120 Words)</option>
+          <option value="detailed">Detailed &amp; In-Depth (240–300 Words)</option>
+        </select>
+      </div>
+      <label class="flex items-center gap-1.5 cursor-pointer select-none text-on-surface-variant hover:text-on-surface">
+        <input type="checkbox" id="preserveLongDescCheck" checked class="rounded border-surface-variant text-primary focus:ring-primary w-3.5 h-3.5 cursor-pointer" />
+        <span class="font-semibold text-on-surface">🛡️ Preserve Existing Long Copy (&gt;85w)</span>
+        <span class="text-outline hidden sm:inline">(Appends high-converting highlights instead of overwriting)</span>
+      </label>
+    </div>
+    <div class="text-outline italic text-[11px]">
+      Powered by Google Gemini AI · Category-Aware Engine
+    </div>
+  </div>
+
+  <!-- Filter Tabs Strip -->
+  <div class="flex flex-wrap items-center gap-1.5 mt-space-md">
+    <button class="catalog-filter-btn px-space-sm py-1 rounded-full text-label-sm font-label-sm bg-primary-container text-on-primary-container font-semibold transition-all cursor-pointer" id="filterBtnAll" onclick="filterCatalog('all', this)">All SKUs (0)</button>
+    <button class="catalog-filter-btn px-space-sm py-1 rounded-full text-label-sm font-label-sm bg-surface-variant text-on-surface-variant hover:text-on-surface transition-all cursor-pointer" id="filterBtnUrgent" onclick="filterCatalog('urgent', this)">🚨 Urgent Fixes (0)</button>
+    <button class="catalog-filter-btn px-space-sm py-1 rounded-full text-label-sm font-label-sm bg-surface-variant text-on-surface-variant hover:text-on-surface transition-all cursor-pointer" id="filterBtnThin" onclick="filterCatalog('thin', this)">📝 Thin Copy (0)</button>
+    <button class="catalog-filter-btn px-space-sm py-1 rounded-full text-label-sm font-label-sm bg-surface-variant text-on-surface-variant hover:text-on-surface transition-all cursor-pointer" id="filterBtnTitles" onclick="filterCatalog('titles', this)">✂️ Long Titles (0)</button>
+    <button class="catalog-filter-btn px-space-sm py-1 rounded-full text-label-sm font-label-sm bg-surface-variant text-on-surface-variant hover:text-on-surface transition-all cursor-pointer" id="filterBtnAlt" onclick="filterCatalog('alt', this)">🖼️ Needs Alt-Tags (0)</button>
+    <button class="catalog-filter-btn px-space-sm py-1 rounded-full text-label-sm font-label-sm bg-surface-variant text-on-surface-variant hover:text-on-surface transition-all cursor-pointer" id="filterBtnOptimized" onclick="filterCatalog('optimized', this)">✅ Optimized (0)</button>
+  </div>
 </div>
 <!-- Responsive Table Wrap -->
 <div class="overflow-x-auto">
@@ -793,9 +861,9 @@ Rich Snippets
         }
       }
 
-      // 1. Update score gauge with genuine live score
-      isStoreOptimized = Boolean(report.details?.is_optimized || report.is_optimized_by_ranksleep || isStoreOptimized);
-      const activeScore = Math.max(report.score || 35, isStoreOptimized ? 98 : 35);
+      // 1. Update score gauge with genuine live earned score (no hardcoded fake clamping)
+      isStoreOptimized = Boolean(report.details?.is_optimized || (report.details?.schema_injected && report.details?.images_fixed && report.details?.titles_fixed && report.details?.descriptions_fixed));
+      const activeScore = report.score || 34;
       recalculateScore(activeScore);
 
       // Save last scanned store and clear any stale fix caches
@@ -859,23 +927,64 @@ Rich Snippets
       }
       const tbody = document.getElementById('catalogTableBody') || document.querySelector('tbody');
 
-      // Update Filter Pill counts
+      // Calculate Defect Metrics
       const altCount = products.filter(p => (p.missing_alts || 0) > 0).length;
-      const thinFilterCount = products.filter(p => (p.desc_len || 0) < 80).length;
-      const schemaCount = isStoreOptimized ? 0 : products.length;
-      const optCount = isStoreOptimized ? products.length : 0;
+      const thinFilterCount = products.filter(p => (p.desc_words || (p.desc_len || 0) / 5) < 25 || (p.desc_len || 0) < 100).length;
+      const truncTitlesCount = products.filter(p => (p.title || '').length > 60).length;
+      const urgentCount = products.filter(p => p.has_issues || (p.missing_alts || 0) > 0 || (p.desc_len || 0) < 100 || (p.title || '').length > 60).length;
+      const optCount = isStoreOptimized ? products.length : products.filter(p => p.is_optimized).length;
 
+      // Update Diagnostic metrics strip
+      const diagTotal = document.getElementById('diagTotalScanned');
+      const diagUrgent = document.getElementById('diagUrgentFixes');
+      const diagThin = document.getElementById('diagThinCopy');
+      const diagTrunc = document.getElementById('diagTruncTitles');
+      const diagAlts = document.getElementById('diagMissingAlts');
+      const diagOpt = document.getElementById('diagOptimizedCount');
+
+      if (diagTotal) diagTotal.innerText = products.length;
+      if (diagUrgent) diagUrgent.innerText = isStoreOptimized ? '0' : urgentCount;
+      if (diagThin) diagThin.innerText = isStoreOptimized ? '0' : thinFilterCount;
+      if (diagTrunc) diagTrunc.innerText = isStoreOptimized ? '0' : truncTitlesCount;
+      if (diagAlts) diagAlts.innerText = isStoreOptimized ? '0' : altCount;
+      if (diagOpt) diagOpt.innerText = isStoreOptimized ? products.length : optCount;
+
+      // Update Filter tab buttons
       const btnAll = document.getElementById('filterBtnAll');
-      const btnAlt = document.getElementById('filterBtnAlt');
+      const btnUrgent = document.getElementById('filterBtnUrgent');
       const btnThin = document.getElementById('filterBtnThin');
-      const btnSchema = document.getElementById('filterBtnSchema');
+      const btnTitles = document.getElementById('filterBtnTitles');
+      const btnAlt = document.getElementById('filterBtnAlt');
       const btnOpt = document.getElementById('filterBtnOptimized');
 
-      if (btnAll) btnAll.innerText = `All (${products.length})`;
-      if (btnAlt) btnAlt.innerText = `Needs Alt-Tags (${altCount})`;
-      if (btnThin) btnThin.innerText = `Thin Copy (${thinFilterCount})`;
-      if (btnSchema) btnSchema.innerText = `Schema Missing (${schemaCount})`;
-      if (btnOpt) btnOpt.innerText = `Optimized (${optCount})`;
+      if (btnAll) btnAll.innerText = `All SKUs (${products.length})`;
+      if (btnUrgent) btnUrgent.innerText = `🚨 Urgent Fixes (${isStoreOptimized ? 0 : urgentCount})`;
+      if (btnThin) btnThin.innerText = `📝 Thin Copy (${isStoreOptimized ? 0 : thinFilterCount})`;
+      if (btnTitles) btnTitles.innerText = `✂️ Long Titles (${isStoreOptimized ? 0 : truncTitlesCount})`;
+      if (btnAlt) btnAlt.innerText = `🖼️ Needs Alt-Tags (${isStoreOptimized ? 0 : altCount})`;
+      if (btnOpt) btnOpt.innerText = `✅ Optimized (${isStoreOptimized ? products.length : optCount})`;
+
+      // Auto Fix button label
+      const btnAutoFixDeficitsText = document.getElementById('btnAutoFixDeficitsText');
+      if (btnAutoFixDeficitsText) {
+        if (isStoreOptimized || urgentCount === 0) {
+          btnAutoFixDeficitsText.innerText = '⚡ All Catalog SKUs Optimized';
+        } else {
+          btnAutoFixDeficitsText.innerText = `⚡ Auto-Fix ${urgentCount} Deficit Products`;
+        }
+      }
+
+      // Diagnostic summary text
+      const diagSummary = document.getElementById('catalogDiagnosticSummary');
+      if (diagSummary) {
+        if (isStoreOptimized) {
+          diagSummary.innerHTML = `All <strong>${products.length} SKUs</strong> have been fully optimized with verified high-CTR titles, niche Gemini descriptions, and alt-tags.`;
+        } else if (urgentCount > 0) {
+          diagSummary.innerHTML = `Identified <strong>${urgentCount} SKUs</strong> needing optimization out of ${products.length} products: <strong>${thinFilterCount}</strong> thin descriptions, <strong>${truncTitlesCount}</strong> long titles, and <strong>${altCount}</strong> missing alt-tags.`;
+        } else {
+          diagSummary.innerHTML = `All <strong>${products.length} catalog products</strong> satisfy baseline technical requirements. Select length preference below to enrich with AI copy.`;
+        }
+      }
 
       // Update Table Footer
       const footerText = document.getElementById('catalogTableFooterText');
@@ -883,9 +992,9 @@ Rich Snippets
         footerText.innerText = `Showing ${products.length} products detected on ${currentStoreUrl}`;
       }
       const optCounter = document.getElementById('catalogOptimizedCount');
-      if (optCounter) optCounter.innerText = optCount;
+      if (optCounter) optCounter.innerText = isStoreOptimized ? products.length : optCount;
       const pendCounter = document.getElementById('catalogPendingCount');
-      if (pendCounter) pendCounter.innerText = products.length - optCount;
+      if (pendCounter) pendCounter.innerText = isStoreOptimized ? 0 : (products.length - optCount);
 
       if (!tbody) return;
 
@@ -907,18 +1016,27 @@ Rich Snippets
       tbody.innerHTML = '';
       products.forEach((p, idx) => {
         const rowId = `productRow_${p.id || idx}`;
-        const isLiveOnShopify = isStoreOptimized;
-        const isThin = (p.desc_len || 0) < 80;
+        const isLiveOnShopify = isStoreOptimized || p.is_optimized;
+        const words = p.desc_words || Math.round((p.desc_len || 0) / 5);
+        const isThin = words < 25 || (p.desc_len || 0) < 100;
+        const isTrunc = (p.title || '').length > 60;
         const hasMissingAlt = (p.missing_alts || 0) > 0;
+        const isUrgent = isThin || isTrunc || hasMissingAlt;
 
-        // 1. Copy Status Badge (Honest - no fake "Live on Store" for unoptimized stores)
+        // 1. Copy Status Badge
         let copyBadgeHtml = '';
         if (isLiveOnShopify) {
-          copyBadgeHtml = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary/10 text-secondary text-xs font-semibold">✓ 150w Gemini Copy</span>`;
+          copyBadgeHtml = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary/10 text-secondary text-xs font-semibold">✓ Niche AI Copy Active</span>`;
         } else if (isThin) {
-          copyBadgeHtml = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-error-container/20 text-error text-xs font-semibold">Thin: ${p.desc_len || 0} chars</span>`;
+          copyBadgeHtml = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-error-container/20 text-error text-xs font-semibold">⚠️ Thin: ${words} words</span>`;
         } else {
-          copyBadgeHtml = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-variant text-on-surface-variant text-xs font-medium">Original Copy (${Math.round((p.desc_len||50)/5)}w)</span>`;
+          copyBadgeHtml = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-variant text-on-surface-variant text-xs font-medium">Original Copy (${words}w)</span>`;
+        }
+
+        // Title Tag Alert
+        let titleAlertHtml = '';
+        if (!isLiveOnShopify && isTrunc) {
+          titleAlertHtml = `<span class="inline-block px-1.5 py-0.2 rounded bg-surface-variant text-outline text-[10px] mt-0.5">✂️ ${p.title.length} chars (Google truncates >60)</span>`;
         }
 
         // 2. Alt-tag Coverage Badge
@@ -950,7 +1068,7 @@ Rich Snippets
         }
 
         tbody.innerHTML += `
-          <tr class="hover:bg-surface-container-high/60 transition-colors" id="${rowId}" data-sku-row="true" data-has-missing-alt="${hasMissingAlt ? 'true' : 'false'}" data-has-thin="${isThin ? 'true' : 'false'}" data-missing-schema="${!isLiveOnShopify ? 'true' : 'false'}" data-is-optimized="${isLiveOnShopify ? 'true' : 'false'}">
+          <tr class="hover:bg-surface-container-high/60 transition-colors" id="${rowId}" data-sku-row="true" data-has-missing-alt="${hasMissingAlt ? 'true' : 'false'}" data-has-thin="${isThin ? 'true' : 'false'}" data-has-trunc="${isTrunc ? 'true' : 'false'}" data-has-urgent="${isUrgent ? 'true' : 'false'}" data-missing-schema="${!isLiveOnShopify ? 'true' : 'false'}" data-is-optimized="${isLiveOnShopify ? 'true' : 'false'}">
             <td class="py-space-md px-space-md">
               <div class="flex items-center gap-space-sm">
                 <div class="w-12 h-12 rounded-lg bg-surface-variant overflow-hidden shrink-0 flex items-center justify-center font-bold text-xs text-outline">
@@ -958,6 +1076,7 @@ Rich Snippets
                 </div>
                 <div class="min-w-0">
                   <p class="font-headline-sm text-sm text-on-surface font-semibold truncate max-w-xs">${p.title}</p>
+                  ${titleAlertHtml}
                   <p class="text-outline font-mono text-xs">ID: ${p.id || 'SKU'} · ${currentStoreUrl}</p>
                 </div>
               </div>
@@ -997,12 +1116,14 @@ Rich Snippets
         let show = false;
         if (category === 'all') {
           show = true;
-        } else if (category === 'alt') {
-          show = row.getAttribute('data-has-missing-alt') === 'true';
+        } else if (category === 'urgent') {
+          show = row.getAttribute('data-has-urgent') === 'true';
         } else if (category === 'thin') {
           show = row.getAttribute('data-has-thin') === 'true';
-        } else if (category === 'schema') {
-          show = row.getAttribute('data-missing-schema') === 'true';
+        } else if (category === 'titles') {
+          show = row.getAttribute('data-has-trunc') === 'true';
+        } else if (category === 'alt') {
+          show = row.getAttribute('data-has-missing-alt') === 'true';
         } else if (category === 'optimized') {
           show = row.getAttribute('data-is-optimized') === 'true';
         }
@@ -1017,6 +1138,102 @@ Rich Snippets
       }
     }
 
+    // ── 1-Click Auto-Fix All Deficit Products (Triage Execution) ─────────────
+    async function optimizeAllDeficitProducts(btnElement) {
+      if (!currentStoreUrl) {
+        appendTerminalLog('Please scan a store first before initiating auto-fix.', 'WARN');
+        return;
+      }
+
+      const descLength = document.getElementById('descLengthSelect')?.value || 'standard';
+      const preserveLong = document.getElementById('preserveLongDescCheck')?.checked ?? true;
+      const origHtml = btnElement ? btnElement.innerHTML : '';
+
+      if (btnElement) {
+        btnElement.disabled = true;
+        btnElement.innerHTML = `<span class="material-symbols-outlined text-xs animate-spin">sync</span> Optimizing Catalog...`;
+      }
+
+      appendTerminalLog(`[CATALOG-TRIAGE] Auto-optimizing deficit products with ${descLength.toUpperCase()} copy (Preserve long: ${preserveLong ? 'YES' : 'NO'})...`, 'SYS');
+
+      const perms = getAiPermissions();
+      try {
+        const res = await fetch('/api/shopify/push-live', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            store_url: currentStoreUrl,
+            token: '',
+            allow_titles: perms.allow_titles,
+            allow_images: perms.allow_images,
+            allow_descriptions: perms.allow_descriptions,
+            allow_schema: perms.allow_schema,
+            description_length: descLength,
+            preserve_existing: preserveLong
+          })
+        });
+        const data = await res.json();
+
+        if (data.status === 'success') {
+          appendTerminalLog(`[TRIAGE COMPLETE] ${data.products_updated || 0} products enriched with niche Gemini copy. ${data.images_updated || 0} image alt-tags updated.`, 'OK');
+
+          // Flip catalog table buttons to live
+          document.querySelectorAll('#catalogTableBody tr[data-sku-row="true"]').forEach(row => {
+            row.setAttribute('data-is-optimized', 'true');
+            row.setAttribute('data-has-urgent', 'false');
+            row.setAttribute('data-has-thin', 'false');
+            row.setAttribute('data-has-trunc', 'false');
+            row.setAttribute('data-has-missing-alt', 'false');
+            const btn = row.querySelector('button');
+            if (btn) {
+              btn.outerHTML = `<span class="inline-flex items-center gap-1 px-space-sm py-1.5 rounded bg-secondary/20 text-secondary font-label-md text-label-md font-bold">✓ Live on Store</span>`;
+            }
+          });
+
+          // Update diagnostic badges to optimized
+          const diagUrgent = document.getElementById('diagUrgentFixes');
+          const diagThin = document.getElementById('diagThinCopy');
+          const diagTrunc = document.getElementById('diagTruncTitles');
+          const diagAlts = document.getElementById('diagMissingAlts');
+          const diagOpt = document.getElementById('diagOptimizedCount');
+          if (diagUrgent) diagUrgent.innerText = '0';
+          if (diagThin) diagThin.innerText = '0';
+          if (diagTrunc) diagTrunc.innerText = '0';
+          if (diagAlts) diagAlts.innerText = '0';
+          if (diagOpt) diagOpt.innerText = scannedCatalogProducts.length;
+
+          // Update card resolutions
+          if (perms.allow_images) markCardAsResolved('issueCard1', 'images');
+          if (perms.allow_descriptions) markCardAsResolved('issueCard2', 'descriptions');
+          if (perms.allow_titles) markCardAsResolved('issueCard3', 'titles');
+          if (perms.allow_schema) markCardAsResolved('issueCard4', 'schema');
+
+          isStoreOptimized = true;
+          const newScore = data.score || 98;
+          recalculateScore(newScore);
+
+          if (btnElement) {
+            btnElement.disabled = true;
+            btnElement.className = 'px-space-md py-2 bg-secondary/20 text-secondary border border-secondary/40 font-label-md text-label-md font-bold rounded-lg flex items-center gap-1.5 cursor-default';
+            btnElement.innerHTML = `<span class="material-symbols-outlined text-sm">verified</span> All Catalog Items Optimized`;
+          }
+        } else {
+          appendTerminalLog(`[AUTH REQUIRED] Bhai pehlay store connect krain! Catalog optimization requires Shopify OAuth permissions for '${currentStoreUrl}'.`, 'ERR');
+          if (data.auth_url) promptStoreAuthorization(data.auth_url, currentStoreUrl);
+          if (btnElement) {
+            btnElement.disabled = false;
+            btnElement.innerHTML = origHtml;
+          }
+        }
+      } catch (err) {
+        appendTerminalLog(`Optimization failed: ${err.message}`, 'ERR');
+        if (btnElement) {
+          btnElement.disabled = false;
+          btnElement.innerHTML = origHtml;
+        }
+      }
+    }
+
     // ── Single Product AI Optimization ──────────────────────────────────────
     async function optimizeSingleCatalogItem(id, handle, encTitle, btnElement) {
       const title = decodeURIComponent(encTitle);
@@ -1026,17 +1243,25 @@ Rich Snippets
 
       appendTerminalLog(`[AI-AGENT] Verifying store connection for "${title.slice(0, 30)}..."`, 'SYS');
 
+      const descLength = document.getElementById('descLengthSelect')?.value || 'standard';
+      const preserveLong = document.getElementById('preserveLongDescCheck')?.checked ?? true;
+
       try {
         const res = await fetch('/api/shopify/push-live', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ store_url: currentStoreUrl, token: '' })
+          body: JSON.stringify({
+            store_url: currentStoreUrl,
+            token: '',
+            description_length: descLength,
+            preserve_existing: preserveLong
+          })
         });
         const data = await res.json();
         if (data.status === 'success') {
           btnElement.outerHTML = `<span class="inline-flex items-center gap-1 px-space-sm py-1.5 rounded bg-secondary/20 text-secondary font-label-md text-label-md font-bold">✓ Live on Shopify</span>`;
-          appendTerminalLog(`Enriched "${title.slice(0, 30)}" with 150w Gemini copy & image alt-tags on Shopify!`, 'OK');
-          recalculateScore(98);
+          appendTerminalLog(`Enriched "${title.slice(0, 30)}" with Gemini copy & image alt-tags on Shopify!`, 'OK');
+          recalculateScore(data.score || 98);
         } else {
           btnElement.innerHTML = originalHtml;
           btnElement.disabled = false;
@@ -1105,6 +1330,9 @@ Rich Snippets
       appendTerminalLog(`[PRO-DEPLOY] Checking Shopify write permissions on ${currentStoreUrl}...`, 'SYS');
 
       const perms = getAiPermissions();
+      const descLength = document.getElementById('descLengthSelect')?.value || 'standard';
+      const preserveLong = document.getElementById('preserveLongDescCheck')?.checked ?? true;
+
       try {
         const res = await fetch('/api/shopify/push-live', {
           method: 'POST',
@@ -1115,16 +1343,18 @@ Rich Snippets
             allow_titles: perms.allow_titles,
             allow_images: perms.allow_images,
             allow_descriptions: perms.allow_descriptions,
-            allow_schema: perms.allow_schema
+            allow_schema: perms.allow_schema,
+            description_length: descLength,
+            preserve_existing: preserveLong
           })
         });
         const data = await res.json();
 
         if (data.status === 'success') {
-          appendTerminalLog(`Sync Successful! ${data.products_updated || 6} products enriched with copy.`, 'OK');
-          appendTerminalLog(`All ${data.images_updated || 27} images tagged with descriptive contextual Alt text.`, 'OK');
+          appendTerminalLog(`Sync Successful! ${data.products_updated || 0} products enriched with niche AI copy.`, 'OK');
+          appendTerminalLog(`All ${data.images_updated || 0} images tagged with descriptive contextual Alt text.`, 'OK');
           appendTerminalLog('Schema.org Product & AggregateRating JSON-LD graph published live to store theme.', 'OK');
-          appendTerminalLog('100% Autopilot Active. Health score boosted to 98 / 100.', 'OK');
+          appendTerminalLog(`100% Autopilot Active. Health score boosted to ${data.score || 98} / 100.`, 'OK');
 
           if (terminalStatus) {
             terminalStatus.innerHTML = '<span class="w-2 h-2 rounded-full bg-secondary"></span> 100% AUTOPILOT ACTIVE';
@@ -1136,7 +1366,7 @@ Rich Snippets
             banner.style.display = 'flex';
             const details = document.getElementById('deploySummaryDetails');
             if (details) {
-              details.innerText = `${data.products_updated || 6} descriptions rewritten · ${data.images_updated || 27} alt-tags injected · All live on Shopify`;
+              details.innerText = `${data.products_updated || 0} descriptions rewritten · ${data.images_updated || 0} alt-tags injected · All live on Shopify`;
             }
           }
 
@@ -1157,7 +1387,7 @@ Rich Snippets
           if (perms.allow_descriptions) markCardAsResolved('issueCard2', 'descriptions');
           if (perms.allow_titles) markCardAsResolved('issueCard3', 'titles');
           if (perms.allow_schema) markCardAsResolved('issueCard4', 'schema');
-          recalculateScore(98);
+          recalculateScore(data.score || 98);
           isStoreOptimized = true;
         } else {
           appendTerminalLog(`[AUTH REQUIRED] Bhai pehlay store connect krain! Pro Autopilot ($180/mo) requires Shopify OAuth write permissions for '${currentStoreUrl}'.`, 'ERR');
@@ -1258,11 +1488,18 @@ Rich Snippets
       const endpoint = endpointMap[actionType] || '/api/shopify/fix/schema';
       appendTerminalLog(`[AI-AGENT] Dispatching automated fix for "${actionType}" on ${currentStoreUrl}...`, 'SYS');
 
+      const descLength = document.getElementById('descLengthSelect')?.value || 'standard';
+      const preserveLong = document.getElementById('preserveLongDescCheck')?.checked ?? true;
+
       try {
         const res = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ store_url: currentStoreUrl })
+          body: JSON.stringify({
+            store_url: currentStoreUrl,
+            description_length: descLength,
+            preserve_existing: preserveLong
+          })
         });
         const data = await res.json();
 
@@ -1309,6 +1546,8 @@ Rich Snippets
       }
 
       const perms = getAiPermissions();
+      const descLength = document.getElementById('descLengthSelect')?.value || 'standard';
+      const preserveLong = document.getElementById('preserveLongDescCheck')?.checked ?? true;
       const allBtn = document.getElementById('autoFixAllBtn');
       const origHtml = allBtn ? allBtn.innerHTML : '';
       if (allBtn) {
@@ -1333,7 +1572,9 @@ Rich Snippets
             allow_titles: perms.allow_titles,
             allow_images: perms.allow_images,
             allow_descriptions: perms.allow_descriptions,
-            allow_schema: perms.allow_schema
+            allow_schema: perms.allow_schema,
+            description_length: descLength,
+            preserve_existing: preserveLong
           })
         });
         const data = await res.json();
@@ -1346,7 +1587,8 @@ Rich Snippets
           if (perms.allow_schema) markCardAsResolved('issueCard4', 'schema');
 
           isStoreOptimized = true;
-          recalculateScore(98);
+          const newScore = data.score || 98;
+          recalculateScore(newScore);
 
           // Update AutoFix button
           if (allBtn) {
@@ -1363,7 +1605,7 @@ Rich Snippets
             if (perms.allow_titles) savedState.titles = true;
             if (perms.allow_schema) savedState.schema = true;
             savedState.is_optimized = true;
-            savedState.score = 98;
+            savedState.score = newScore;
             localStorage.setItem(`ranksleep_fixes_${currentStoreUrl}`, JSON.stringify(savedState));
           } catch(e) {}
 
