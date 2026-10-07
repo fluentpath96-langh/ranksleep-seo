@@ -37,6 +37,22 @@ SHOPIFY_CLIENT_ID = os.environ.get("SHOPIFY_CLIENT_ID", "73bfd247bf57cf8ad82c615
 SHOPIFY_CLIENT_SECRET = os.environ.get("SHOPIFY_CLIENT_SECRET", "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")
 APP_URL = os.environ.get("APP_URL", "https://ranksleepseo.com")
 
+env_file = os.path.join(BASE_DIR, ".env")
+if os.path.exists(env_file):
+    try:
+        with open(env_file, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    k, v = line.split("=", 1)
+                    if k.strip() not in os.environ:
+                        os.environ[k.strip()] = v.strip()
+    except Exception:
+        pass
+
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
+SUPABASE_ANON_KEY = os.environ.get("SUPABASE_ANON_KEY", "")
+
 import json
 
 def save_shop_token(shop: str, token: str, scope: str = ""):
@@ -146,17 +162,65 @@ class OptimizeRequest(BaseModel):
     current_desc: str = ""
     business_type: str = "LocalBusiness"
 
+class SupabaseConfigRequest(BaseModel):
+    url: str
+    anon_key: str
+
 @app.get("/", response_class=HTMLResponse)
 async def serve_dashboard():
     index_file = os.path.join(TEMPLATES_DIR, "index.html")
     with open(index_file, "r", encoding="utf-8") as f:
-        return f.read()
+        content = f.read()
+    
+    sb_url = os.environ.get("SUPABASE_URL", "")
+    sb_key = os.environ.get("SUPABASE_ANON_KEY", "")
+    script_inject = f'<script>window.SUPABASE_CONFIG = {{ url: "{sb_url}", anonKey: "{sb_key}" }};</script>'
+    content = content.replace("</head>", f"{script_inject}\n</head>")
+    return content
+
+@app.post("/api/auth/save-supabase-config")
+async def save_supabase_config(data: SupabaseConfigRequest):
+    env_file = os.path.join(BASE_DIR, ".env")
+    lines = []
+    if os.path.exists(env_file):
+        with open(env_file, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+    
+    new_lines = []
+    found_url, found_key = False, False
+    for line in lines:
+        if line.startswith("SUPABASE_URL="):
+            new_lines.append(f"SUPABASE_URL={data.url.strip()}\n")
+            found_url = True
+        elif line.startswith("SUPABASE_ANON_KEY="):
+            new_lines.append(f"SUPABASE_ANON_KEY={data.anon_key.strip()}\n")
+            found_key = True
+        else:
+            new_lines.append(line)
+    if not found_url:
+        new_lines.append(f"SUPABASE_URL={data.url.strip()}\n")
+    if not found_key:
+        new_lines.append(f"SUPABASE_ANON_KEY={data.anon_key.strip()}\n")
+    
+    with open(env_file, "w", encoding="utf-8") as f:
+        f.writelines(new_lines)
+    
+    os.environ["SUPABASE_URL"] = data.url.strip()
+    os.environ["SUPABASE_ANON_KEY"] = data.anon_key.strip()
+    return {"status": "success", "message": "Supabase configuration saved permanently!"}
 
 @app.get("/favicon.ico", include_in_schema=False)
 async def serve_favicon():
-    favicon_path = os.path.join(STATIC_DIR, "favicon.svg")
-    if os.path.exists(favicon_path):
-        return FileResponse(favicon_path, media_type="image/svg+xml")
+    candidates = [
+        ("favicon.ico", "image/x-icon"),
+        ("favicon.svg", "image/svg+xml"),
+        ("favicon.png", "image/png"),
+        ("logo.png", "image/png")
+    ]
+    for fname, mtype in candidates:
+        favicon_path = os.path.join(STATIC_DIR, fname)
+        if os.path.exists(favicon_path):
+            return FileResponse(favicon_path, media_type=mtype)
     return HTMLResponse("", status_code=204)
 
 @app.get("/guide/shopify", response_class=HTMLResponse)
