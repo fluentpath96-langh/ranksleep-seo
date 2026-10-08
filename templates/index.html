@@ -2431,6 +2431,9 @@ Rich Snippets
 
           // Terminal Feedback
           appendTerminalLog(`🚀 [WEBP OPTIMIZED]: Successfully converted ${data.images_processed} product visuals to Next-Gen WebP in ${totalDuration}s!`, 'OK');
+          if (data.live_theme_injected) {
+            appendTerminalLog('⚡ [SHOPIFY THEME DEPLOYED]: snippets/ranksleep-speed-booster.liquid injected into layout/theme.liquid! LCP hero visual preloaded.', 'OK');
+          }
           appendTerminalLog(`📉 [CORE WEB VITALS]: LCP accelerated from ${data.lcp_before_seconds}s to ${data.lcp_after_seconds}s. Saved ${data.saved_bandwidth_mb} MB.`, 'OK');
           appendTerminalLog(`🟢 [GREEN ZONE REACHED]: PageSpeed score boosted to ${data.projected_speed_score}/100.`, 'OK');
 
