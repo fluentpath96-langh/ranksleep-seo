@@ -41,10 +41,13 @@ def _call_gemini_llm(prompt: str) -> str:
             return candidates[0]["content"]["parts"][0]["text"].strip()
     return ""
 
-def generate_seo_optimizations(site_url: str, current_title: str = "", current_desc: str = "", content_snippet: str = "", business_type: str = "Store") -> dict:
+def generate_seo_optimizations(site_url: str, current_title: str = "", current_desc: str = "", content_snippet: str = "", business_type: str = "Store", intent: str = "technical_seo", site_archetype: str = "ecommerce") -> dict:
     """
     Generates tailored, high-converting SEO assets using Google Gemini AI,
     with an intelligent heuristic fallback.
+    Supports user intents:
+    - 'technical_seo': Pure Google Search Ranking (Meta tags, Schema JSON-LD, Alt tags)
+    - 'content_seo': Full-Stack SEO + Blog & Editorial Content Engine
     """
     domain_part = site_url.replace("https://", "").replace("http://", "").split("/")[0]
     clean_name = domain_part.replace("www.", "").split(".")[0].capitalize()
@@ -53,12 +56,46 @@ def generate_seo_optimizations(site_url: str, current_title: str = "", current_d
     ai_generated = None
     if GEMINI_API_KEY:
         try:
-            prompt = f"""You are an elite E-Commerce SEO Specialist.
-Generate Google search optimizations for this website:
+            if intent == "content_seo":
+                prompt = f"""You are an elite Content Marketing & WordPress SEO Architect.
+Generate Google search & editorial content optimizations for this {site_archetype} website:
+Brand/Site: {clean_name}
+URL: {site_url}
+Current Title: {current_title}
+Current Description: {current_desc}
+Site Type: {site_archetype}
+
+Provide a RAW valid JSON object with EXACTLY this structure:
+{{
+  "title": "high-CTR title between 50 and 60 chars ending with brand name",
+  "meta_description": "compelling meta description between 140 and 155 chars with clear value and call to action",
+  "image_alt_tags": [
+    "descriptive image alt tag 1",
+    "descriptive image alt tag 2",
+    "descriptive image alt tag 3"
+  ],
+  "keywords": ["keyword1", "keyword2", "keyword3"],
+  "blog_headlines": [
+    "Catchy High-CTR Blog Headline 1 for {clean_name}",
+    "Ultimate Guide or How-To Headline 2 for this niche",
+    "Top Trends & Best Practices Headline 3"
+  ],
+  "content_expansion": [
+    "Add dedicated FAQ section answering top 5 customer search queries",
+    "Expand pillar pages to 1,200+ words with keyword-rich H2 and H3 subheadings",
+    "Inject contextual internal links across related category articles"
+  ]
+}}
+Return raw JSON only, no markdown codeblocks or quotes around JSON.
+"""
+            else:
+                prompt = f"""You are an elite E-Commerce & Technical SEO Specialist.
+Generate Google search optimizations for this {site_archetype} website:
 Brand/Store: {clean_name}
 URL: {site_url}
 Current Title: {current_title}
 Current Description: {current_desc}
+Site Type: {site_archetype}
 
 Provide a RAW valid JSON object with EXACTLY this structure:
 {{
@@ -80,7 +117,6 @@ Return raw JSON only, no markdown codeblocks or quotes around JSON.
                 cleaned = re.sub(r"\s*```$", "", cleaned)
                 ai_generated = json.loads(cleaned)
         except Exception as e:
-            # Fall back to heuristic templates if Gemini fails
             print(f"[Gemini AI Fallback] Notice: {e}")
             ai_generated = None
 
@@ -89,9 +125,19 @@ Return raw JSON only, no markdown codeblocks or quotes around JSON.
         optimized_title = ai_generated["title"]
         optimized_desc = ai_generated["meta_description"]
         sample_alt_tags = ai_generated.get("image_alt_tags", [
-            f"{clean_name} signature product showcase",
-            f"{clean_name} top-rated collection feature",
+            f"{clean_name} signature showcase",
+            f"{clean_name} top-rated feature",
             f"{clean_name} customer testimonial review"
+        ])
+        blog_headlines = ai_generated.get("blog_headlines", [
+            f"10 Reasons Why {clean_name} is Dominating {site_archetype.capitalize()} in 2026",
+            f"The Complete Buyer's Guide: Everything You Need to Know About {clean_name}",
+            f"Expert Insights: How to Get Maximum Results with {clean_name}"
+        ])
+        content_expansion = ai_generated.get("content_expansion", [
+            "Add high-intent FAQ Schema block to answer voice search queries",
+            "Deepen category descriptions with semantic LSI keywords",
+            "Establish siloing link architecture connecting blog posts to landing pages"
         ])
         engine_source = "Google Gemini 3.5 AI"
     else:
@@ -99,7 +145,7 @@ Return raw JSON only, no markdown codeblocks or quotes around JSON.
         base_title = current_title.strip() if current_title else f"{clean_name} Official Website"
         base_title = re.sub(r"\s*[|\-–]\s*.*$", "", base_title).strip()
         if len(base_title) < 15:
-            optimized_title = f"{base_title} | Premium Services & Best Deals 2026"
+            optimized_title = f"{base_title} | Premium Quality & Top Rated 2026"
         else:
             optimized_title = f"{base_title} | Fast, Reliable & Top Rated"
         
@@ -109,17 +155,27 @@ Return raw JSON only, no markdown codeblocks or quotes around JSON.
         if current_desc and len(current_desc) >= 60:
             cleaned_desc = current_desc.strip()
         else:
-            cleaned_desc = f"Discover top quality products and services at {clean_name}. Fast shipping, top rated quality, and dedicated support."
+            cleaned_desc = f"Discover top quality and trusted solutions at {clean_name}. High quality, fast delivery, and 24/7 dedicated support."
         
         if len(cleaned_desc) < 120:
-            optimized_desc = f"{cleaned_desc} Rated 5-stars by customers. Explore offers and shop online now!"
+            optimized_desc = f"{cleaned_desc} Rated 5-stars by customers. Explore today!"
         else:
             optimized_desc = cleaned_desc[:155] + "..."
 
         sample_alt_tags = [
-            f"{clean_name} hero showcase banner",
-            f"{clean_name} top-rated product and service feature",
-            f"Verified customer review and testimonial for {clean_name}"
+            f"{clean_name} official hero showcase",
+            f"{clean_name} verified product and service feature",
+            f"Customer review and rating showcase for {clean_name}"
+        ]
+        blog_headlines = [
+            f"10 Game-Changing Tips to Maximize Your Experience with {clean_name}",
+            f"The Ultimate 2026 Guide to {clean_name}: Trends, Tips & Secrets",
+            f"Why {clean_name} is the #1 Choice for Smart Consumers This Year"
+        ]
+        content_expansion = [
+            "Add FAQ Schema block targeting people-also-ask queries",
+            "Expand thin articles to 1,200+ words to avoid Google Panda thin-content penalties",
+            "Create topical clusters linking blog guides directly to key conversion pages"
         ]
         engine_source = "Heuristic Rule Engine"
 
@@ -143,6 +199,8 @@ Return raw JSON only, no markdown codeblocks or quotes around JSON.
     return {
         "status": "success",
         "engine": engine_source,
+        "intent": intent,
+        "site_archetype": site_archetype,
         "original": {
             "title": current_title,
             "description": current_desc
@@ -151,7 +209,9 @@ Return raw JSON only, no markdown codeblocks or quotes around JSON.
             "title": optimized_title,
             "meta_description": optimized_desc,
             "image_alt_tags": sample_alt_tags,
-            "schema_json": schema_markup
+            "schema_json": schema_markup,
+            "blog_headlines": blog_headlines,
+            "content_expansion": content_expansion
         }
     }
 
@@ -376,11 +436,13 @@ Output ONLY clean HTML with no markdown code fences or backticks.
                 clean_ai = re.sub(r'^```html\s*', '', ai_text.strip(), flags=re.IGNORECASE)
                 clean_ai = re.sub(r'^```\s*', '', clean_ai)
                 clean_ai = re.sub(r'\s*```$', '', clean_ai)
-                # Verify sanity for food niche
-                if niche == "food" and any(bad in clean_ai.lower() for bad in ["precision engineering", "durable materials", "build quality"]):
-                    pass  # Fall through to category heuristic
-                else:
-                    return clean_ai
+                # Strict sanity check for food/edible niche: eliminate any mechanical or material phrasing
+                if niche == "food":
+                    forbidden_food_terms = ["material", "materials", "precision engineering", "durable materials", "build quality", "hardware", "durability", "fabric", "chassis", "industrial", "wear and tear"]
+                    if any(bad in clean_ai.lower() for bad in forbidden_food_terms):
+                        # Force authentic food heuristic to guarantee 100% mouth-watering culinary description
+                        return _generate_niche_heuristic_copy(niche, clean_title, shop_name, length_pref)
+                return clean_ai
         except Exception as e:
             print(f"[Gemini Copy Generation Error] {e}")
 

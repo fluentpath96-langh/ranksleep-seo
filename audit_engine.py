@@ -70,16 +70,119 @@ def audit_website(url: str) -> dict:
 
     soup = BeautifulSoup(html, "html.parser")
 
-    # 1. CMS Detection (WordPress / Shopify)
-    cms = "Custom / Other"
-    if "wp-content" in html or "wp-includes" in html or soup.find("meta", {"name": "generator", "content": re.compile(r"WordPress", re.I)}):
-        cms = "WordPress"
-    elif "cdn.shopify.com" in html or "Shopify.theme" in html:
-        cms = "Shopify"
-    elif "static.wixstatic.com" in html:
-        cms = "Wix"
-    results["cms_detected"] = cms
-    results["passed_checks"].append(f"Platform detected: {cms}")
+    # 1. Advanced CMS & Platform Archetype Detection
+    html_lower = html.lower()
+    is_wp = bool(
+        "wp-content" in html_lower or
+        "wp-includes" in html_lower or
+        "wp-json" in html_lower or
+        soup.find("meta", {"name": "generator", "content": re.compile(r"WordPress", re.I)}) or
+        soup.find("link", {"rel": re.compile(r"https://api\.w\.org/", re.I)})
+    )
+
+    is_shopify = bool(
+        "cdn.shopify.com" in html_lower or
+        "shopify.theme" in html_lower or
+        "myshopify.com" in domain.lower() or
+        "shopify-section" in html_lower
+    )
+
+    has_woocommerce = bool(
+        "woocommerce" in html_lower or
+        "/plugins/woocommerce/" in html_lower or
+        "wc-ajax" in html_lower or
+        "woocommerce-price-amount" in html_lower or
+        "woocommerce-page" in html_lower
+    )
+
+    # Detect active WordPress plugins / builders
+    detected_plugins = []
+    if is_wp:
+        if has_woocommerce:
+            detected_plugins.append("WooCommerce")
+        if "yoast" in html_lower or "yoast-schema-graph" in html_lower:
+            detected_plugins.append("Yoast SEO")
+        if "rank-math" in html_lower or "rankmath" in html_lower:
+            detected_plugins.append("Rank Math")
+        if "aioseo" in html_lower:
+            detected_plugins.append("All in One SEO")
+        if "elementor" in html_lower:
+            detected_plugins.append("Elementor")
+        if "divi" in html_lower or "et_builder" in html_lower:
+            detected_plugins.append("Divi")
+        if "learndash" in html_lower or "tutor-lms" in html_lower:
+            detected_plugins.append("LMS")
+
+    # Determine site archetype and user-facing badge
+    platform = "custom"
+    platform_name = "Custom Platform"
+    badge_label = "Custom Site Detected"
+    site_archetype = "business"
+
+    # E-Commerce detection
+    ecommerce_signals = [
+        has_woocommerce,
+        is_shopify,
+        "add to cart" in html_lower,
+        "add-to-cart" in html_lower,
+        "/cart" in html_lower,
+        "/checkout" in html_lower,
+        "cart-contents" in html_lower
+    ]
+
+    if is_wp:
+        platform = "wordpress"
+        platform_name = "WordPress"
+        if has_woocommerce or any(ecommerce_signals):
+            site_archetype = "ecommerce"
+            badge_label = "WordPress Store Detected"
+        else:
+            blog_signals = [
+                len(soup.find_all("article")) >= 2,
+                "/category/" in html_lower or "/author/" in html_lower or "/blog" in parsed.path.lower(),
+                "entry-title" in html_lower,
+                "wp-post-image" in html_lower
+            ]
+            lms_signals = ["learndash" in html_lower, "tutor-lms" in html_lower, "course" in html_lower]
+            if any(blog_signals):
+                site_archetype = "blog"
+                badge_label = "WordPress Site Detected (Blog & Media)"
+            elif any(lms_signals):
+                site_archetype = "lms"
+                badge_label = "WordPress LMS / Learning Portal Detected"
+            else:
+                site_archetype = "business"
+                badge_label = "WordPress Site Detected"
+    elif is_shopify:
+        platform = "shopify"
+        platform_name = "Shopify"
+        site_archetype = "ecommerce"
+        badge_label = "Shopify Store Detected"
+    elif "static.wixstatic.com" in html_lower:
+        platform = "wix"
+        platform_name = "Wix"
+        badge_label = "Wix Site Detected"
+    elif "squarespace.com" in html_lower:
+        platform = "squarespace"
+        platform_name = "Squarespace"
+        badge_label = "Squarespace Site Detected"
+
+    cms_info = {
+        "platform": platform,
+        "platform_name": platform_name,
+        "badge_label": badge_label,
+        "site_archetype": site_archetype,
+        "is_wordpress": is_wp,
+        "is_shopify": is_shopify,
+        "has_woocommerce": has_woocommerce,
+        "detected_plugins": detected_plugins
+    }
+
+    results["cms_detected"] = platform_name
+    results["cms_info"] = cms_info
+    results["passed_checks"].append(f"Platform: {badge_label}")
+    if detected_plugins:
+        results["passed_checks"].append(f"WordPress Ecosystem: {', '.join(detected_plugins)}")
 
     # 2. SSL / HTTPS Check
     if not results["is_https"]:

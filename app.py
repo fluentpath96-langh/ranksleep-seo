@@ -17,6 +17,7 @@ import uvicorn
 from audit_engine import audit_website
 from ai_optimizer import generate_seo_optimizations, generate_smart_product_copy
 from package_plugin import create_plugin_zip
+from image_optimizer import analyze_and_optimize_store_media
 
 app = FastAPI(title="AutoSEO Cloud SaaS", version="1.0.0")
 
@@ -161,6 +162,8 @@ class OptimizeRequest(BaseModel):
     current_title: str = ""
     current_desc: str = ""
     business_type: str = "LocalBusiness"
+    intent: Optional[str] = "technical_seo"
+    site_archetype: Optional[str] = "ecommerce"
 
 class SupabaseConfigRequest(BaseModel):
     url: str
@@ -281,9 +284,20 @@ async def run_optimization(data: OptimizeRequest):
         site_url=data.url,
         current_title=data.current_title,
         current_desc=data.current_desc,
-        business_type=data.business_type
+        business_type=data.business_type,
+        intent=data.intent or "technical_seo",
+        site_archetype=data.site_archetype or "ecommerce"
     )
     return optimizations
+
+class ImageOptimizeRequest(BaseModel):
+    url: str
+    catalog_images: Optional[list] = []
+
+@app.post("/api/speed/optimize-images")
+async def api_optimize_images(data: ImageOptimizeRequest):
+    result = analyze_and_optimize_store_media(data.url, data.catalog_images)
+    return result
 
 @app.get("/api/download-plugin")
 async def download_plugin():
